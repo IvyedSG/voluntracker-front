@@ -237,17 +237,25 @@
               class="p-4 bg-gray-800/20 rounded-lg border border-gray-800 h-[120px] flex items-center"
             >
               <div class="flex items-center justify-between w-full">
-                <USelectMenu
+                <USelect
                   v-model="form.plan"
-                  :options="planOptions"
+                  :items="planOptions"
                   placeholder="Seleccionar plan"
                   size="lg"
                   class="w-72"
-                />
-
-                <div
-                  class="ml-5 bg-gray-800/40 p-3 rounded-lg flex items-center"
                 >
+                  <template #item="{ item }">
+                    <div class="flex items-center gap-2">
+                      <UIcon 
+                        :name="getPlanIcon(item.value)"
+                        :class="getPlanIconClass(item.value)"
+                      />
+                      <span>{{ item.label }}</span>
+                    </div>
+                  </template>
+                </USelect>
+
+                <div class="ml-5 bg-gray-800/40 p-3 rounded-lg flex items-center">
                   <UIcon
                     :name="
                       form.plan === 'Premium'
@@ -279,15 +287,9 @@
                       {{ form.plan }}
                     </div>
                     <div class="text-sm text-gray-500">
-                      <span v-if="form.plan === 'Gratuito'"
-                        >1 usuario organizador</span
-                      >
-                      <span v-else-if="form.plan === 'Pro'"
-                        >7 usuarios organizadores</span
-                      >
-                      <span v-else-if="form.plan === 'Premium'"
-                        >20 usuarios organizadores</span
-                      >
+                      <span :class="tenantStore.getPlanTextClass(form.plan)">
+                        {{ tenantStore.getPlanOrganizers(form.plan) }} usuarios organizadores
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -326,21 +328,15 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from "vue";
+import { useTenantStore } from '~/stores/tenantStore'
+import type { Tenant } from '~/types/tenant'
+
+// Obtener el store para acceder a datos y funciones comunes
+const tenantStore = useTenantStore()
 
 // Props
 const props = defineProps<{
-  tenant: {
-    id: string;
-    nombre: string;
-    logo: string;
-    subdominio: string;
-    correo: string;
-    fechaCreacion: string;
-    plan: string;
-    numVoluntarios: number;
-    activo: boolean;
-    colorPrimario: string;
-  };
+  tenant: Tenant;
   open: boolean;
   saving?: boolean;
 }>();
@@ -348,21 +344,7 @@ const props = defineProps<{
 // Emits
 const emit = defineEmits<{
   (e: "update:open", open: boolean): void;
-  (
-    e: "update",
-    tenant: {
-      id: string;
-      nombre: string;
-      logo: string;
-      subdominio: string;
-      correo: string;
-      fechaCreacion: string;
-      plan: string;
-      numVoluntarios: number;
-      activo: boolean;
-      colorPrimario: string;
-    }
-  ): void;
+  (e: "update", tenant: Tenant): void;
 }>();
 
 // Estado del modal
@@ -395,31 +377,12 @@ const errors = reactive({
 // Estado del color picker
 const colorPickerOpen = ref(false);
 
-// Opciones para el selector de planes
-const planOptions = [
-  { label: "Gratuito", value: "Gratuito" },
-  { label: "Pro", value: "Pro" },
-  { label: "Premium", value: "Premium" },
-];
-
-// Lista de colores predefinidos
-const predefinedColors = [
-  "#0D9488",
-  "#0ea5e9",
-  "#8b5cf6",
-  "#ec4899",
-  "#ef4444",
-  "#f97316",
-  "#eab308",
-  "#84cc16",
-  "#14b8a6",
-  "#06b6d4",
-  "#3b82f6",
-  "#a855f7",
-  "#d946ef",
-  "#f43f5e",
-  "#10b981",
-];
+// Usar opciones y colores directamente del store
+const planOptions = tenantStore.planOptions.map(option => ({
+  ...option,
+  icon: tenantStore.getPlanIcon(option.value)
+}));
+const predefinedColors = tenantStore.predefinedColors;
 
 // Comprobar si el formulario es válido
 const isFormValid = computed(() => {
@@ -526,4 +489,30 @@ watch(isOpen, (val) => {
     });
   }
 });
+
+// Obtener el icono del plan
+function getPlanIcon(plan: string): string {
+  switch (plan) {
+    case 'Premium':
+      return 'i-heroicons-star';
+    case 'Pro':
+      return 'i-heroicons-rocket-launch';
+    case 'Gratuito':
+    default:
+      return 'i-heroicons-gift';
+  }
+}
+
+// Obtener la clase del icono del plan
+function getPlanIconClass(plan: string): string {
+  switch (plan) {
+    case 'Premium':
+      return 'text-amber-300';
+    case 'Pro':
+      return 'text-blue-400';
+    case 'Gratuito':
+    default:
+      return 'text-gray-400';
+  }
+}
 </script>

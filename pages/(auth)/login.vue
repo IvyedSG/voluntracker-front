@@ -103,17 +103,20 @@ const form = reactive<LoginCredentials>({
   contrasena: '',
 })
 
-// Estado para el alert
+// Definir el tipo para el color del alert
+type AlertColor = 'error' | 'success' | 'warning' | 'primary' | 'secondary' | 'info' | 'neutral'
+
+// Estado para el alert con tipo correcto
 const alertInfo = reactive({
   show: false,
   title: '',
   description: '',
-  color: 'primary', // 'primary', 'success', 'error', etc.
+  color: 'primary' as AlertColor, // Tipo correcto con valor predeterminado
   icon: ''
 })
 
-// Función para mostrar el alert
-function showAlert(title: string, description: string, color: string) {
+// Función para mostrar el alert con tipo correcto
+function showAlert(title: string, description: string, color: AlertColor) {
   alertInfo.title = title
   alertInfo.description = description
   alertInfo.color = color
@@ -133,7 +136,7 @@ async function onSubmit() {
   try {
     const result = await auth.login(form)
     
-    // Mostrar alerta de éxito
+    // Mostrar alerta de éxito (usando valor permitido)
     showAlert(
       'Inicio de sesión exitoso', 
       'Redirigiendo al panel de control...', 
@@ -170,7 +173,7 @@ async function onSubmit() {
       }
     }
     
-    // Mostrar alerta de error
+    // Mostrar alerta de error (usando valor permitido)
     showAlert(
       errorTitle,
       errorMessage,

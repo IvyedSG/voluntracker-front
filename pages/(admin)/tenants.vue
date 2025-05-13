@@ -135,34 +135,17 @@
 
 <script setup lang="ts">
 import { ref, computed, reactive, onMounted } from 'vue'
-import { useTenant } from '~/composables/useTenant'
-import type { Tenant, NewTenant } from '~/composables/useTenant'
+import { useTenantStore } from '~/stores/tenantStore'
+import type { Tenant, NewTenant, TenantFilters } from '~/types/tenant'
 
-// Inicializar el composable de tenant
-const {
-  // Constantes y opciones  
-  planOptions,
-  statusOptions,
-  
-  // Estado
-  tenants,
-  isLoading,
-  error,
-  tenantsStats,
-  
-  // Operaciones CRUD
-  fetchTenants,
-  createTenant,
-  updateTenant,
-  deleteTenant,
-  toggleTenantStatus
-} = useTenant()
+// Inicializar el store de tenant
+const tenantStore = useTenantStore()
 
 // Referencias a componentes
 const tenantControlsRef = ref(null);
 
 // Estados de visualización
-const viewMode = ref<'table' | 'grid'>('table') // Especificar tipo literal
+const viewMode = ref<'table' | 'grid'>('table')
 const currentPage = ref(1)
 const itemsPerPage = 8
 const isTableLoading = ref(false)
@@ -182,12 +165,23 @@ const editingTenant = ref<Tenant | null>(null)
 const isSaving = ref(false)
 const isDeleting = ref(false)
 
+// Tomar opciones directamente del store
+const { planOptions, statusOptions } = tenantStore
+
 // Configurar filtrado
 const searchQuery = ref('')
-const filters = reactive({
-  status: null as boolean | null,
-  plan: null as string | null
+const filters = reactive<TenantFilters>({
+  status: null,
+  plan: null
 })
+
+// Stats computadas
+const tenantsStats = computed(() => tenantStore.tenantsStats)
+
+// Getters desde el store
+const tenants = computed(() => tenantStore.tenants)
+const isLoading = computed(() => tenantStore.isLoading)
+const error = computed(() => tenantStore.error)
 
 // Manejadores para eventos del componente TenantControls
 function handleSearch(query: string) {
@@ -203,7 +197,7 @@ function handleFilter(newFilters: { status: boolean | null; plan: string | null 
 
 // Filtrado de tenants según búsqueda y filtros
 const filteredTenants = computed(() => {
-  let filtered = [...tenants.value]
+  let filtered = [...tenantStore.tenants]
   
   // Aplicar búsqueda
   if (searchQuery.value) {
@@ -236,7 +230,7 @@ const paginatedTenants = computed(() => {
 
 // Función para cargar o recargar los datos
 async function loadTenants() {
-  await fetchTenants()
+  await tenantStore.fetchTenants()
 }
 
 // Resetear filtros
@@ -246,9 +240,6 @@ function resetFilters() {
   filters.plan = null
   currentPage.value = 1
 }
-
-// Eliminar la función filterTenants que no se usa
-// Cambiaremos TenantControls para que use handleSearch directamente
 
 // Abrir modal de detalles
 function openTenantDetailModal(tenant: Tenant) {
@@ -275,15 +266,9 @@ async function handleToggleTenantStatus(tenant: Tenant) {
   try {
     isTableLoading.value = true
     
-    const result = await toggleTenantStatus(tenant)
+    const result = await tenantStore.toggleTenantStatus(tenant)
     
     if (result.success) {
-      // Actualizar estado en la lista local
-      const index = tenants.value.findIndex(t => t.id === tenant.id)
-      if (index !== -1) {
-        tenants.value[index].activo = newStatus
-      }
-      
       // Si el tenant en detalle es el que se está modificando, actualizar también
       if (selectedTenant.value?.id === tenant.id) {
         selectedTenant.value.activo = newStatus
@@ -328,11 +313,9 @@ async function saveTenant(newTenant: NewTenant) {
   isSaving.value = true
   
   try {
-    const result = await createTenant(newTenant)
+    const result = await tenantStore.createTenant(newTenant)
     
-    if (result.success && result.data) {
-      // Agregar nuevo tenant a la lista
-      tenants.value.unshift(result.data)
+    if ('success' in result && result.success && result.data) {
       isAddTenantModalOpen.value = false
       
       // Mostrar mensaje de éxito
@@ -345,7 +328,7 @@ async function saveTenant(newTenant: NewTenant) {
     } else {
       useToast().add({
         title: 'Error',
-        description: 'error' in result ? result.error : 'No se pudo crear la organización',
+        description: 'No se pudo crear la organización',
         icon: 'i-heroicons-exclamation-triangle',
         color: 'error'
       })
@@ -370,15 +353,9 @@ async function handleUpdateTenant(updatedTenant: Tenant) {
   isSaving.value = true
   
   try {
-    const result = await updateTenant(updatedTenant)
+    const result = await tenantStore.updateTenant(updatedTenant)
     
-    if (result.success && result.data) {  // Verificar que data existe
-      // Actualizar tenant en la lista
-      const index = tenants.value.findIndex(t => t.id === updatedTenant.id)
-      if (index !== -1) {
-        tenants.value[index] = { ...updatedTenant }
-      }
-      
+    if (result.success && result.data) {
       // Si el tenant en detalle es el que se está modificando, actualizar también
       if (selectedTenant.value?.id === updatedTenant.id) {
         selectedTenant.value = { ...updatedTenant }
@@ -421,12 +398,9 @@ async function handleDeleteTenant() {
   isDeleting.value = true
   
   try {
-    const result = await deleteTenant(tenantToDelete.value.id)
+    const result = await tenantStore.deleteTenant(tenantToDelete.value.id)
     
     if (result.success) {
-      // Eliminar tenant de la lista
-      tenants.value = tenants.value.filter(t => t.id !== tenantToDelete.value?.id)
-      
       isDeleteConfirmOpen.value = false
       
       // Si el tenant eliminado estaba siendo mostrado en detalle, cerrar modal

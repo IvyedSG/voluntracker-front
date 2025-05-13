@@ -29,13 +29,13 @@
     <div class="flex flex-wrap gap-2">
       <!-- Selector de estado -->
       <USelect
-        v-model="filters.status"
+        :model-value="filters.status === null ? 'all' : filters.status ? 'active' : 'inactive'"
         :items="statusItems"
         placeholder="Estado"
         icon="i-heroicons-flag"
         size="md"
         class="w-28 sm:w-40"
-        @update:model-value="emitFilters"
+        @update:model-value="handleStatusChange"
       >
         <template #item="{ item }">
           <div class="flex items-center gap-2">
@@ -50,13 +50,13 @@
 
       <!-- Selector de plan -->
       <USelect
-        v-model="filters.plan"
+        :model-value="filters.plan === null ? 'all' : filters.plan"
         :items="planItems"
         placeholder="Plan"
         icon="i-heroicons-cube"
         size="md"
-        class="w-28 sm:w-40"
-        @update:model-value="emitFilters"
+        class="w-28 sm:w-52"
+        @update:model-value="handlePlanChange"
       >
         <template #item="{ item }">
           <div class="flex items-center gap-2">
@@ -92,15 +92,11 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
-import type { TenantFilters } from '~/composables/useTenant';
 
-// Interfaz mejorada sin 'any'
-interface SelectItem {
-  label: string;
-  value: string | number | boolean | null;
-  icon?: string;
-  iconClass?: string;
-  disabled?: boolean;
+// Definición local de la interfaz TenantFilters
+interface TenantFilters {
+  status: boolean | null;
+  plan: string | null;
 }
 
 const props = defineProps<{
@@ -119,6 +115,8 @@ const emit = defineEmits<{
 // Estado local
 const searchQuery = ref('');
 const viewMode = ref<'table' | 'grid'>(props.initialViewMode || 'table');
+
+// Asegurar que filters tenga el tipo correcto
 const filters = reactive<TenantFilters>({
   status: null,
   plan: null
@@ -130,11 +128,12 @@ function getIconName(icon?: string): string {
 }
 
 // Transformar las opciones en formato adecuado para USelect
-const statusItems = computed<SelectItem[]>(() => {
-  const items: SelectItem[] = [
+const statusItems = computed(() => {
+  // El "todos" tiene un valor especial que luego interpretamos como null
+  const items = [
     {
       label: 'Todos',
-      value: null,
+      value: 'all', // Cambiado de null a 'all' para compatibilidad
       icon: 'i-heroicons-adjustments-horizontal',
       iconClass: 'text-gray-400'
     }
@@ -142,17 +141,17 @@ const statusItems = computed<SelectItem[]>(() => {
   
   return items.concat(props.statusOptions.map(option => ({
     label: option.label,
-    value: option.value,
+    value: option.value ? 'active' : 'inactive', // Convertir boolean a string
     icon: option.value ? 'i-heroicons-check-circle' : 'i-heroicons-pause-circle',
     iconClass: option.value ? 'text-green-500' : 'text-yellow-500'
   })));
 });
 
-const planItems = computed<SelectItem[]>(() => {
-  const items: SelectItem[] = [
+const planItems = computed(() => {
+  const items = [
     {
       label: 'Todos los planes',
-      value: null,
+      value: 'all', // Cambiado de null a 'all' para compatibilidad
       icon: 'i-heroicons-squares-2x2',
       iconClass: 'text-gray-400'
     }
@@ -172,12 +171,34 @@ const planItems = computed<SelectItem[]>(() => {
     
     return {
       label: option.label,
-      value: option.value,
+      value: option.value, // Ya es string, mantener como está
       icon,
       iconClass
     };
   }));
 });
+
+// Manejar la conversión del valor seleccionado de string a boolean o null
+const handleStatusChange = (value: string | number | undefined) => {
+  if (value === 'all' || value === undefined) {
+    filters.status = null;
+  } else if (value === 'active') {
+    filters.status = true;
+  } else if (value === 'inactive') {
+    filters.status = false;
+  }
+  emitFilters();
+};
+
+// Manejar la conversión del valor seleccionado de string a string o null
+const handlePlanChange = (value: string | number | undefined) => {
+  if (value === 'all' || value === undefined) {
+    filters.plan = null;
+  } else {
+    filters.plan = value as string;
+  }
+  emitFilters();
+};
 
 // Emitir eventos
 function emitSearch() {

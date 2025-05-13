@@ -113,20 +113,6 @@
       </div>
     </UCard>
     
-    <!-- Tarjeta para añadir un nuevo tenant -->
-    <UCard
-      v-if="tenants.length > 0"
-      class="border border-gray-800 border-dashed bg-gray-900/20 hover:bg-gray-900/40 flex flex-col justify-center items-center transition-colors cursor-pointer h-full"
-      @click="$emit('add-tenant')"
-    >
-      <div class="text-center p-6">
-        <div class="bg-gray-800/50 h-14 w-14 rounded-full flex items-center justify-center mx-auto mb-3">
-          <UIcon name="i-heroicons-plus" class="h-7 w-7 text-gray-400" />
-        </div>
-        <h3 class="font-medium text-gray-300 mb-1">Añadir organización</h3>
-        <p class="text-sm text-gray-400">Registrar una nueva ONG en la plataforma</p>
-      </div>
-    </UCard>
     
     <!-- Estado vacío -->
     <div v-if="tenants.length === 0 && !loading" class="col-span-full p-8 text-center text-gray-400">

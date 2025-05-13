@@ -66,8 +66,9 @@
           <div class="cursor-pointer flex flex-col items-center group">
             <div class="p-0.5 rounded-full bg-gradient-to-br from-green-500/70 to-green-300/70 shadow-md group-hover:from-green-400/80 group-hover:to-green-200/80 transition-all duration-300">
               <UAvatar
-                :src="user?.avatar || 'https://ui-avatars.com/api/?name=A+P'"
+                :src="user?.avatar || undefined"
                 :alt="user?.nombre || 'Admin profile'"
+                :text="getUserInitials"
                 size="sm"
                 class="border-1.5 border-[#1a2622]"
               />
@@ -125,11 +126,33 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from 'vue'
+
 const auth = useAuth()
 const route = useRoute()
 
 // Obtener el usuario del estado de autenticación
 const user = computed(() => auth.user.value)
+
+// Obtener las iniciales del nombre del usuario
+const getUserInitials = computed(() => {
+  if (!user.value?.nombre) return 'AD'
+  
+  // Dividir el nombre completo en partes
+  const nameParts = user.value.nombre.split(' ').filter(part => part.length > 0)
+  
+  if (nameParts.length === 0) return 'AD'
+  
+  if (nameParts.length === 1) {
+    // Si solo hay un nombre, usar las dos primeras letras
+    return nameParts[0].substring(0, 2).toUpperCase()
+  } else {
+    // Usar la primera letra del primer nombre y la primera letra del último nombre/apellido
+    const firstInitial = nameParts[0].charAt(0)
+    const lastInitial = nameParts[nameParts.length - 1].charAt(0)
+    return (firstInitial + lastInitial).toUpperCase()
+  }
+})
 
 // Título de la página según la ruta
 const pageTitle = computed(() => {

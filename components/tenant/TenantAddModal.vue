@@ -58,17 +58,27 @@
             <h4 class="text-base font-semibold uppercase tracking-wider text-gray-400 mb-2">Configuración</h4>
             
             <UFormField label="Plan de suscripción" required class="mb-5">
-              <USelectMenu
+              <USelect
                 v-model="form.plan"
-                :options="planOptions"
+                :items="planOptions"
                 placeholder="Seleccionar plan"
                 size="lg"
-              />
+              >
+                <template #item="{ item }">
+                  <div class="flex items-center gap-2">
+                    <UIcon 
+                      :name="getPlanIcon(item.value)"
+                      :class="getPlanIconClass(item.value)"
+                    />
+                    <span>{{ item.label }}</span>
+                  </div>
+                </template>
+              </USelect>
               <template #hint>
                 <div class="text-sm mt-1.5">
-                  <span v-if="form.plan === 'Gratuito'" class="text-gray-500">Límite de 50 voluntarios. Sin funciones avanzadas.</span>
-                  <span v-else-if="form.plan === 'Pro'" class="text-blue-400">Hasta 200 voluntarios. Incluye reportes y API.</span>
-                  <span v-else-if="form.plan === 'Premium'" class="text-purple-400">Voluntarios ilimitados. Todas las funciones disponibles.</span>
+                  <span :class="tenantStore.getPlanTextClass(form.plan)">
+                    {{ tenantStore.getPlanDescription(form.plan) }}
+                  </span>
                 </div>
               </template>
             </UFormField>
@@ -148,6 +158,8 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from 'vue'
+import { useTenantStore } from '~/stores/tenantStore'
+import type { NewTenant } from '~/types/tenant'
 
 // Props
 const props = defineProps<{
@@ -161,6 +173,9 @@ const emit = defineEmits<{
   (e: 'save', data: NewTenant): void;
 }>();
 
+// Obtener el store para acceder a datos y funciones comunes
+const tenantStore = useTenantStore()
+
 // Estado del modal
 const isOpen = computed({
   get: () => props.open,
@@ -173,7 +188,7 @@ const form = reactive({
   subdominio: '',
   correo: '',
   plan: 'Gratuito',
-  colorPrimario: '#0D9488' // Color por defecto
+  colorPrimario: tenantStore.DEFAULT_COLOR // Usar color por defecto del store
 });
 
 // Estado para errores
@@ -186,19 +201,14 @@ const errors = reactive({
 // Estado del color picker
 const colorPickerOpen = ref(false);
 
-// Opciones para el selector de planes
-const planOptions = [
-  { label: 'Gratuito', value: 'Gratuito' },
-  { label: 'Pro', value: 'Pro' },
-  { label: 'Premium', value: 'Premium' }
-];
+// Usar opciones de planes directamente desde el store
+const planOptions = tenantStore.planOptions.map(option => ({
+  ...option,
+  icon: tenantStore.getPlanIcon(option.value)
+}));
 
-// Lista de colores predefinidos
-const predefinedColors = [
-  '#0D9488', '#0ea5e9', '#8b5cf6', '#ec4899', '#ef4444',
-  '#f97316', '#eab308', '#84cc16', '#14b8a6', '#06b6d4',
-  '#3b82f6', '#a855f7', '#d946ef', '#f43f5e', '#10b981'
-];
+// Usar colores predefinidos desde el store
+const predefinedColors = tenantStore.predefinedColors;
 
 // Comprobar si el formulario es válido
 const isFormValid = computed(() => {
@@ -218,44 +228,22 @@ function selectColor(color: string) {
   colorPickerOpen.value = false;
 }
 
-// Formatear el subdominio (solo letras minúsculas, números y guiones)
+// Formatear el subdominio usando la función del store
 function handleSubdomainInput() {
-  form.subdominio = form.subdominio
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, '') // Eliminar caracteres no permitidos
-    .replace(/--+/g, '-'); // Reemplazar múltiples guiones por uno solo
+  form.subdominio = tenantStore.formatSubdomain(form.subdominio);
 }
 
-// Validar un campo específico
+// Validar un campo específico usando las funciones del store
 function validateField(field: 'nombre' | 'subdominio' | 'correo') {
-  errors[field] = '';
-  
   switch (field) {
     case 'nombre':
-      if (!form.nombre.trim()) {
-        errors.nombre = 'El nombre es obligatorio';
-      } else if (form.nombre.length < 3) {
-        errors.nombre = 'El nombre debe tener al menos 3 caracteres';
-      }
+      errors.nombre = tenantStore.validateName(form.nombre);
       break;
-      
     case 'subdominio':
-      if (!form.subdominio.trim()) {
-        errors.subdominio = 'El subdominio es obligatorio';
-      } else if (form.subdominio.length < 3) {
-        errors.subdominio = 'El subdominio debe tener al menos 3 caracteres';
-      } else if (!/^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/.test(form.subdominio)) {
-        errors.subdominio = 'El subdominio solo puede contener letras minúsculas, números y guiones internos';
-      }
-      // Aquí se podría añadir una verificación de disponibilidad del subdominio
+      errors.subdominio = tenantStore.validateSubdomain(form.subdominio);
       break;
-      
     case 'correo':
-      if (!form.correo.trim()) {
-        errors.correo = 'El correo es obligatorio';
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.correo)) {
-        errors.correo = 'Introduce un correo electrónico válido';
-      }
+      errors.correo = tenantStore.validateEmail(form.correo);
       break;
   }
 }
@@ -306,13 +294,30 @@ function cancel() {
   isOpen.value = false;
 }
 
-// Interfaz para el tenant nuevo
-interface NewTenant {
-  nombre: string;
-  subdominio: string;
-  correo: string;
-  plan: string;
-  colorPrimario?: string;
+// Obtener icono según el plan
+function getPlanIcon(plan: string): string {
+  switch (plan) {
+    case 'Premium':
+      return 'i-heroicons-star';
+    case 'Pro':
+      return 'i-heroicons-rocket-launch';
+    case 'Gratuito':
+    default:
+      return 'i-heroicons-gift';
+  }
+}
+
+// Obtener clase de estilo para el icono según el plan
+function getPlanIconClass(plan: string): string {
+  switch (plan) {
+    case 'Premium':
+      return 'text-amber-300';
+    case 'Pro':
+      return 'text-blue-400';
+    case 'Gratuito':
+    default:
+      return 'text-gray-400';
+  }
 }
 
 // Resetear formulario al cerrar

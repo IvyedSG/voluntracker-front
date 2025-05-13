@@ -1,5 +1,12 @@
 import type { LoginCredentials, User } from '~/types/auth'
 
+// Add this to your type definitions
+interface RefreshTokenResponse {
+  token: string;
+  refreshToken: string;
+  status?: string;
+}
+
 interface AuthResponse {
   status: string;
   data: {
@@ -70,7 +77,7 @@ export function useAuth() {
     }
     
     try {
-      const response = await $fetch(`${apiBase}/auth/refresh`, {
+      const response = await $fetch<RefreshTokenResponse>(`${apiBase}/auth/refresh`, {
         method: 'POST',
         body: { refreshToken: refreshToken.value },
         headers: {
@@ -90,8 +97,6 @@ export function useAuth() {
       return true
     } catch (error) {
       console.error('Error al refrescar token:', error)
-      // No llamar a logout aquí para evitar recursión
-      // Solo devolver false
       return false
     }
   }
@@ -123,15 +128,20 @@ export function useAuth() {
       } else {
         throw new Error('Respuesta inválida del servidor')
       }
-    } catch (error: any) {
-      // Capturar errores específicos y reenviarlos con mensajes claros
-      if (error.response?.status === 401) {
-        throw new Error('Credenciales incorrectas. Por favor, verifica tu usuario y contraseña.')
-      } else if (error.response?.status === 429) {
-        throw new Error('Demasiados intentos fallidos. Por favor, inténtalo más tarde.')
-      } else {
-        throw error
+    } catch (error: unknown) {
+      // Type guard to check if error is a FetchError
+      if (error && typeof error === 'object' && 'response' in error) {
+        const fetchError = error as { response?: { status?: number } };
+        
+        if (fetchError.response?.status === 401) {
+          throw new Error('Credenciales incorrectas. Por favor, verifica tu usuario y contraseña.')
+        } else if (fetchError.response?.status === 429) {
+          throw new Error('Demasiados intentos fallidos. Por favor, inténtalo más tarde.')
+        }
       }
+      
+      // Re-throw the error if it doesn't match our specific conditions
+      throw error instanceof Error ? error : new Error(String(error));
     }
   }
   

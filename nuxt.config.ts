@@ -11,7 +11,8 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxt/image',
     '@nuxt/ui',
-    '@nuxtjs/color-mode', // Asegúrate de incluir este módulo
+    '@nuxtjs/color-mode',
+    '@pinia/nuxt',
   ],
   vite: {
     plugins: [
@@ -44,8 +45,8 @@ export default defineNuxtConfig({
     '/**': { appMiddleware: ['auth'] }
   },
   colorMode: {
-    preference: 'dark', // Establece el modo preferido a oscuro
-    fallback: 'dark',   // Usa oscuro si no se detecta preferencia del sistema
-    classSuffix: '',    // No agrega sufijo a las clases (usa 'dark' en lugar de 'dark-mode')
+    preference: 'dark', 
+    fallback: 'dark',  
+    classSuffix: '',   
   },
 })
