@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxt/image',
     '@nuxt/ui',
+    '@nuxtjs/color-mode', // Asegúrate de incluir este módulo
   ],
   vite: {
     plugins: [
@@ -24,26 +25,27 @@ export default defineNuxtConfig({
         weights: [400, 500, 600, 700],
         styles: ['normal', 'italic'],
         provider: 'google',
-        global: true // This ensures the font is loaded globally
+        global: true
       }
     ],
     defaults: {
-      // Default font options
       weights: [400, 500, 600, 700],
       styles: ['normal'],
       subsets: ['latin', 'latin-ext']
     },
-    // Enable CSS variable processing to work better with Tailwind
     processCSSVariables: true
   },
-  // Actualiza runtimeConfig para usar URL relativas
   runtimeConfig: {
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE
     }
   },
-  // Aplica el middleware de autenticación globalmente
   routeRules: {
     '/**': { appMiddleware: ['auth'] }
-  }
+  },
+  colorMode: {
+    preference: 'dark', // Establece el modo preferido a oscuro
+    fallback: 'dark',   // Usa oscuro si no se detecta preferencia del sistema
+    classSuffix: '',    // No agrega sufijo a las clases (usa 'dark' en lugar de 'dark-mode')
+  },
 })

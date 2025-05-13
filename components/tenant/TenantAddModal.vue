@@ -20,16 +20,16 @@
           <div class="space-y-4">
             <h4 class="text-base font-semibold uppercase tracking-wider text-gray-400 mb-2">Información general</h4>
             
-            <UFormGroup label="Nombre de la organización" required :error="errors.nombre" class="mb-5">
+            <UFormField label="Nombre de la organización" required :error="errors.nombre" class="mb-5">
               <UInput 
                 v-model="form.nombre" 
                 placeholder="Ej: Cruz Roja Argentina"
                 size="lg"
                 @blur="validateField('nombre')"
               />
-            </UFormGroup>
-            
-            <UFormGroup label="Subdominio" required :error="errors.subdominio" class="mb-5">
+            </UFormField>
+
+            <UFormField label="Subdominio" required :error="errors.subdominio" class="mb-5">
               <div class="flex items-center gap-2">
                 <UInput 
                   v-model="form.subdominio" 
@@ -40,12 +40,9 @@
                 />
                 <span class="text-gray-400 text-lg">.voluntracker.org</span>
               </div>
-              <template #hint>
-                <span class="text-sm text-gray-500 mt-1.5">El subdominio debe ser único, solo letras minúsculas, números y guiones.</span>
-              </template>
-            </UFormGroup>
+            </UFormField>
             
-            <UFormGroup label="Email de contacto" required :error="errors.correo" class="mb-5">
+            <UFormField label="Email de contacto" required :error="errors.correo" class="mb-5">
               <UInput 
                 v-model="form.correo" 
                 type="email" 
@@ -53,14 +50,14 @@
                 placeholder="admin@organizacion.org"
                 @blur="validateField('correo')"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
           
           <!-- Configuración de plan y personalización -->
           <div class="space-y-4 pt-3">
             <h4 class="text-base font-semibold uppercase tracking-wider text-gray-400 mb-2">Configuración</h4>
             
-            <UFormGroup label="Plan de suscripción" required class="mb-5">
+            <UFormField label="Plan de suscripción" required class="mb-5">
               <USelectMenu
                 v-model="form.plan"
                 :options="planOptions"
@@ -74,9 +71,9 @@
                   <span v-else-if="form.plan === 'Premium'" class="text-purple-400">Voluntarios ilimitados. Todas las funciones disponibles.</span>
                 </div>
               </template>
-            </UFormGroup>
+            </UFormField>
             
-            <UFormGroup label="Color primario" class="mb-5">
+            <UFormField label="Color primario" class="mb-5">
               <div class="flex items-center gap-4">
                 <div 
                   class="h-12 w-12 rounded-full cursor-pointer border-2 border-gray-700 transition-transform hover:scale-110 relative shadow-md"
@@ -119,7 +116,7 @@
               <template #hint>
                 <span class="text-sm text-gray-500 mt-1.5">Este color se usará para la personalización de la interfaz de la organización.</span>
               </template>
-            </UFormGroup>
+            </UFormField>
           </div>
         </form>
       </div>

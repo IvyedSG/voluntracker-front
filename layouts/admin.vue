@@ -45,12 +45,17 @@
         <UDropdownMenu :items="notificationItems" :popper="{ placement: 'right-start' }">
           <div class="flex flex-col items-center cursor-pointer text-green-100/80 hover:text-green-300 transition-all duration-300">
             <div class="relative">
-              <UIcon 
-                name="i-heroicons-bell" 
-                :size="24" 
-                class="mb-1.5 hover:scale-110 transition-transform duration-200" 
-              />
-              <div class="absolute -top-1.5 -right-1.5 h-3 w-3 bg-red-500 rounded-full flex items-center justify-center shadow-lg shadow-red-500/30 ring-2 ring-[#1c2f29]"/>
+              <UChip 
+                color="error" 
+                size="xl" 
+                position="top-right"
+              >
+                <UIcon 
+                  name="i-heroicons-bell" 
+                  :size="24" 
+                  class="mb-1.5 hover:scale-110 transition-transform duration-200" 
+                />
+              </UChip>
             </div>
             <span class="text-xs font-medium tracking-wide">Alertas</span>
           </div>
@@ -78,22 +83,40 @@
     <!-- MAIN CONTENT-->
     <div class="flex-1 overflow-hidden p-2">
       <div class="h-full bg-[#121212] rounded-2xl overflow-hidden shadow-2xl">
-        <div class="px-6 pt-6 pb-4 bg-gradient-to-r from-[#1a1a1a] to-[#121212]">
-          <div class="flex items-center justify-between mb-1">
-            <div class="flex items-center">
-              <h1 class="text-2xl font-bold text-white">{{ pageTitle }}</h1>
-              <UBadge v-if="pageBadge" color="green" variant="subtle" class="ml-3">{{ pageBadge }}</UBadge>
+        <div class="px-4 py-2.5 bg-gradient-to-r from-[#1a1a1a] to-[#121212] border-b border-gray-800/30">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <!-- Icon for the page -->
+              <div class="flex-shrink-0 h-8 w-8 rounded-lg bg-green-900/30 flex items-center justify-center shadow-inner">
+                <UIcon 
+                  :name="getPageIcon(route.path)" 
+                  class="h-4 w-4 text-green-400"
+                />
+              </div>
+              
+              <!-- Title and breadcrumb -->
+              <div class="flex items-center gap-2">
+                <h1 class="text-lg font-bold text-white">{{ pageTitle }}</h1>
+                <UBadge v-if="pageBadge" color="green" variant="subtle" size="xl" class="font-medium">
+                  {{ pageBadge }}
+                </UBadge>
+
+                <!-- Breadcrumb -->
+              <div class="flex items-center text-sm text-gray-500 ml-2">
+                <div class="h-4 w-px bg-gray-700 mx-2"></div>
+                <UIcon name="i-heroicons-home" size="sm" class="mr-1.5 opacity-70" />
+                <span class="text-green-500/70 font-medium">Admin</span>
+                <UIcon name="i-heroicons-chevron-right" size="sm" class="mx-1.5 text-gray-700" />
+                <span class="font-medium">{{ pageTitle }}</span>
+              </div>
+              </div>
             </div>
-          </div>
-          <!-- BREADCRUMB -->
-          <div class="flex items-center text-sm text-gray-400">
-            <UIcon name="i-heroicons-building-office-2" class="h-4 w-4 mr-1" />
-            <span>/ {{ pageTitle }}</span>
+            
           </div>
         </div>
         
         <!-- MAIN CON SCROLL-->
-        <div class="p-6 h-[calc(100%-80px)] overflow-auto">
+        <div class="p-6 h-[calc(100%-44px)] overflow-auto">
           <slot />
         </div>
       </div>
@@ -226,6 +249,32 @@ const userMenuItems = [
     }
   ]
 ]
+
+// Current time display
+const currentTime = ref(new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }))
+
+// Update time every minute
+onMounted(() => {
+  setInterval(() => {
+    currentTime.value = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+  }, 60000)
+})
+
+// Get icon for current page
+function getPageIcon(path) {
+  switch (path) {
+    case '/tenants':
+      return 'i-heroicons-building-office-2-solid'
+    case '/subscription-plans':
+      return 'i-heroicons-credit-card-solid'
+    case '/platform-stats':
+      return 'i-heroicons-chart-bar-solid'
+    case '/admin-settings':
+      return 'i-heroicons-cog-6-tooth-solid'
+    default:
+      return 'i-heroicons-squares-2x2-solid'
+  }
+}
 
 // Definir los eventos que puede emitir el layout
 defineEmits(['add-tenant'])

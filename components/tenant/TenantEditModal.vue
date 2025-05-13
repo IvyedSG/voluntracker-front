@@ -106,7 +106,7 @@
             <!-- Fila 1, Columna 1: Nombre -->
             <div class="p-4 bg-gray-800/20 rounded-lg border border-gray-800">
               <!-- Aumentado de p-3 a p-4 -->
-              <UFormGroup
+              <UFormField
                 label="Nombre de la organización"
                 required
                 :error="errors.nombre"
@@ -118,13 +118,13 @@
                   size="lg"
                   @blur="validateField('nombre')"
                 />
-              </UFormGroup>
+              </UFormField>
             </div>
 
             <!-- Fila 1, Columna 2: Subdominio -->
             <div class="p-4 bg-gray-800/20 rounded-lg border border-gray-800">
               <!-- Aumentado de p-3 a p-4 -->
-              <UFormGroup
+              <UFormField
                 label="Subdominio"
                 required
                 :error="errors.subdominio"
@@ -143,19 +143,13 @@
                   >
                   <!-- Aumentado de sm a base -->
                 </div>
-                <template #hint>
-                  <span class="text-sm text-gray-500"
-                    >Solo letras minúsculas, números y guiones.</span
-                  >
-                  <!-- Aumentado de xs a sm -->
-                </template>
-              </UFormGroup>
+              </UFormField>
             </div>
 
             <!-- Fila 2, Columna 1: Email -->
             <div class="p-4 bg-gray-800/20 rounded-lg border border-gray-800">
               <!-- Aumentado de p-3 a p-4 -->
-              <UFormGroup
+              <UFormField
                 label="Email de contacto"
                 required
                 :error="errors.correo"
@@ -168,12 +162,12 @@
                   placeholder="admin@organizacion.org"
                   @blur="validateField('correo')"
                 />
-              </UFormGroup>
+              </UFormField>
             </div>
 
             <!-- Fila 2, Columna 2: Color primario -->
             <div class="p-4 bg-gray-800/20 rounded-lg border border-gray-800">
-              <UFormGroup label="Color primario" class="mb-0">
+              <UFormField label="Color primario" class="mb-0">
                 <div class="flex items-center gap-4">
                   <div
                     class="h-12 w-12 rounded-full cursor-pointer border-2 border-gray-700 transition-transform hover:scale-110 relative shadow-md"
@@ -224,7 +218,7 @@
                     </div>
                   </div>
                 </div>
-              </UFormGroup>
+              </UFormField>
             </div>
           </div>
         </div>
