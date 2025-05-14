@@ -153,18 +153,18 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <!-- Organizadores -->
-              <UFormField label="Organizadores máximos" hint="Usar -1 para ilimitado">
+              <UFormField label="Usuarios de gestión" hint="Número máximo de usuarios administradores">
                 <UInput 
                   v-model.number="form.maxOrganizadores" 
                   type="number"
-                  min="-1"
+                  min="1"
                   size="lg"
                   @blur="validateField('maxOrganizadores')"
                 />
               </UFormField>
               
               <!-- Voluntarios -->
-              <UFormField label="Voluntarios máximos" hint="Usar -1 para ilimitado">
+              <UFormField label="Voluntarios" hint="Recomendado mantener en -1 (ilimitado)">
                 <UInput 
                   v-model.number="form.maxVoluntarios" 
                   type="number"
@@ -318,19 +318,19 @@ const form = reactive<NewPlan>({
   descripcion: '',
   precio: 0,
   periodoFacturacion: 'mensual',
-  moneda: 'USD',
+  moneda: 'PEN',
   color: planStore.DEFAULT_COLOR,
   icono: planStore.DEFAULT_ICON,
   caracteristicas: [
-    { texto: 'Organizadores', incluido: true },
-    { texto: 'Voluntarios', incluido: true },
+    { texto: 'Usuarios de gestión', incluido: true },
+    { texto: 'Voluntarios ilimitados', incluido: true },
     { texto: 'Eventos mensuales', incluido: true },
     { texto: 'Almacenamiento', incluido: true }
   ],
-  maxOrganizadores: 3,
-  maxVoluntarios: 50,
-  maxEventos: 10,
-  almacenamiento: 500,
+  maxOrganizadores: 5,
+  maxVoluntarios: -1, // Ilimitado por defecto
+  maxEventos: 15,
+  almacenamiento: 1000,
   soportePrioritario: false,
   reportesAvanzados: false,
   personalizacion: false,
@@ -446,19 +446,19 @@ function cancel() {
     descripcion: '',
     precio: 0,
     periodoFacturacion: 'mensual',
-    moneda: 'USD',
+    moneda: 'PEN',
     color: planStore.DEFAULT_COLOR,
     icono: planStore.DEFAULT_ICON,
     caracteristicas: [
-      { texto: 'Organizadores', incluido: true },
-      { texto: 'Voluntarios', incluido: true },
+      { texto: 'Usuarios de gestión', incluido: true },
+      { texto: 'Voluntarios ilimitados', incluido: true },
       { texto: 'Eventos mensuales', incluido: true },
       { texto: 'Almacenamiento', incluido: true }
     ],
-    maxOrganizadores: 3,
-    maxVoluntarios: 50,
-    maxEventos: 10,
-    almacenamiento: 500,
+    maxOrganizadores: 5,
+    maxVoluntarios: -1,
+    maxEventos: 15,
+    almacenamiento: 1000,
     soportePrioritario: false,
     reportesAvanzados: false,
     personalizacion: false,

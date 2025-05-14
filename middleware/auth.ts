@@ -1,4 +1,4 @@
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   const auth = useAuth()
   
   // Permitir acceso a ruta de login
@@ -19,5 +19,16 @@ export default defineNuxtRouteMiddleware((to) => {
   // Proteger todas las demás rutas
   if (!auth.isAuthenticated.value) {
     return navigateTo('/login', { replace: true })
+  }
+  
+  // Si estamos autenticados pero no tenemos datos completos del usuario, intentar obtenerlos
+  if (auth.isAuthenticated.value && (!auth.user.value?.creado_en || !auth.user.value?.actualizado_en)) {
+    try {
+      // Silenciosamente obtener datos actualizados del perfil
+      await auth.getProfile()
+    } catch (error) {
+      console.error('Error al actualizar perfil de usuario:', error)
+      // No redireccionamos aquí, continuamos con los datos que tenemos
+    }
   }
 })

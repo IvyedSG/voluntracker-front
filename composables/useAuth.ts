@@ -1,10 +1,11 @@
-import type { LoginCredentials, User } from '~/types/auth'
+import type { LoginCredentials, User, ProfileResponse } from '~/types/auth'
 
-// Add this to your type definitions
 interface RefreshTokenResponse {
-  token: string;
-  refreshToken: string;
-  status?: string;
+  status: string;
+  data: {
+    token: string;
+    refreshToken: string;
+  }
 }
 
 interface AuthResponse {
@@ -81,23 +82,92 @@ export function useAuth() {
         method: 'POST',
         body: { refreshToken: refreshToken.value },
         headers: {
+          'Authorization': `Bearer ${authToken.value}`, // Añadir token como Bearer auth
           'Content-Type': 'application/json'
         },
         retry: 0 // Evitar reintentos automáticos
       })
       
-      if (!response.token || !response.refreshToken) {
-        throw new Error('Respuesta de token inválida')
+      // Verificar la estructura correcta de la respuesta
+      if (response.status === 'success' && response.data) {
+        // Verificar que existan los datos necesarios antes de guardar
+        if (!response.data.token || !response.data.refreshToken) {
+          throw new Error('Respuesta de token inválida')
+        }
+        
+        // Actualizar tokens
+        authToken.value = response.data.token
+        refreshToken.value = response.data.refreshToken
+        
+        return true
+      } else {
+        throw new Error('Respuesta inválida del servidor')
       }
-      
-      // Actualizar tokens
-      authToken.value = response.token
-      refreshToken.value = response.refreshToken
-      
-      return true
     } catch (error) {
       console.error('Error al refrescar token:', error)
+      
+      // Manejo específico de errores
+      if (error && typeof error === 'object' && 'response' in error) {
+        const fetchError = error as { response?: { status?: number } };
+        
+        if (fetchError.response?.status === 401) {
+          console.error('Token de autorización inválido o expirado')
+        }
+      }
+      
+      // Limpiar tokens en caso de error
+      logout()
       return false
+    }
+  }
+  
+  // Obtener el perfil del usuario
+  async function getProfile() {
+    if (!authToken.value) {
+      throw new Error('No hay token de autenticación disponible')
+    }
+    
+    try {
+      const response = await $fetch<ProfileResponse>(`${apiBase}/auth/profile`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${authToken.value}`, // Ya está correctamente implementado
+          'Content-Type': 'application/json'
+        },
+        retry: 1 // Permitir un reintento por si hay un problema de red
+      })
+      
+      if (response.status === 'success' && response.data) {
+        // Actualizar los datos del usuario en el almacenamiento
+        userData.value = JSON.stringify(response.data)
+        
+        return response.data
+      } else {
+        throw new Error('Respuesta inválida del servidor')
+      }
+    } catch (error: unknown) {
+      // Manejar errores específicos
+      if (error && typeof error === 'object' && 'response' in error) {
+        const fetchError = error as { response?: { status?: number } };
+        
+        if (fetchError.response?.status === 401) {
+          console.warn('Token de autenticación inválido, intentando renovar...')
+          // Intentar refrescar el token y reintentar
+          const refreshSuccess = await refreshAuthToken().catch(() => false)
+          if (refreshSuccess) {
+            console.log('Token renovado correctamente, reintentando obtener perfil')
+            // Reintentar la petición con el nuevo token
+            return getProfile()
+          } else {
+            throw new Error('Sesión expirada. Por favor, inicia sesión nuevamente.')
+          }
+        } else if (fetchError.response?.status === 404) {
+          throw new Error('No se encontró la información del usuario.')
+        }
+      }
+      
+      // Re-lanzar el error si no coincide con nuestras condiciones específicas
+      throw error instanceof Error ? error : new Error(String(error));
     }
   }
   
@@ -185,6 +255,7 @@ export function useAuth() {
     checkAuth,
     isAuthenticated,
     user,
-    refreshAuthToken
+    refreshAuthToken,
+    getProfile
   }
 }
