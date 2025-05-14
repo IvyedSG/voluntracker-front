@@ -4,8 +4,8 @@
     <div v-if="isLoginPage">
       <NuxtPage />
     </div>
-    <!-- Para todas las demás rutas, usar el layout admin -->
-    <NuxtLayout v-else name="admin">
+    <!-- Usar el layout definido en la página -->
+    <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
   </UApp>
