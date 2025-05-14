@@ -134,9 +134,14 @@
 </template>
 
 <script setup lang="ts">
+// Importar dependencias
 import { ref, computed, reactive, onMounted } from 'vue'
 import { useTenantStore } from '~/stores/tenantStore'
 import type { Tenant, NewTenant, TenantFilters } from '~/types/tenant'
+
+definePageMeta({
+  layout: 'admin',
+});
 
 // Inicializar el store de tenant
 const tenantStore = useTenantStore()
