@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
-import { fetchMockTenants } from '~/mocks/tenants'
+// import { fetchMockTenants } from '~/mocks/tenants' // We'll replace this with real API
+import { fetchTenants as fetchTenantsFromAPI } from '~/services/tenantService'
+import type { TenantResponse } from '~/services/tenantService'
 
 // Importar tipos desde el archivo centralizado
 import type { 
@@ -22,7 +24,7 @@ export const useTenantStore = defineStore('tenant', {
     
     // Opciones para selectores
     planOptions: [
-      { label: 'Gratuito', value: 'Gratuito' },
+      { label: 'Básico', value: 'Básico' },
       { label: 'Pro', value: 'Pro' },
       { label: 'Premium', value: 'Premium' }
     ],
@@ -34,6 +36,11 @@ export const useTenantStore = defineStore('tenant', {
       '#0D9488', '#0ea5e9', '#8b5cf6', '#ec4899', '#ef4444',
       '#f97316', '#eab308', '#84cc16', '#14b8a6', '#06b6d4',
       '#3b82f6', '#a855f7', '#d946ef', '#f43f5e', '#10b981'
+    ],
+    subscriptionStatusOptions: [
+      { label: 'Activo', value: 'activo', color: 'success' },
+      { label: 'Suspendido', value: 'suspendido', color: 'warning' },
+      { label: 'Cancelado', value: 'cancelado', color: 'error' }
     ]
   }),
   
@@ -102,7 +109,7 @@ export const useTenantStore = defineStore('tenant', {
           return 'primary';
         case 'Pro':
           return 'info';
-        case 'Gratuito':
+        case 'Básico':
           return 'neutral';
         default:
           return 'neutral';
@@ -116,7 +123,7 @@ export const useTenantStore = defineStore('tenant', {
           return 'i-heroicons-star';
         case 'Pro':
           return 'i-heroicons-rocket-launch';
-        case 'Gratuito':
+        case 'Básico':
           return 'i-heroicons-gift';
         default:
           return 'i-heroicons-gift';
@@ -130,7 +137,7 @@ export const useTenantStore = defineStore('tenant', {
           return '20 usuarios organizadores.';
         case 'Pro':
           return '7 usuarios organizadores.';
-        case 'Gratuito':
+        case 'Básico':
           return '1 usuario organizador.';
         default:
           return '';
@@ -144,7 +151,7 @@ export const useTenantStore = defineStore('tenant', {
           return 20;
         case 'Pro':
           return 7;
-        case 'Gratuito':
+        case 'Básico':
           return 1;
         default:
           return 1;
@@ -158,7 +165,7 @@ export const useTenantStore = defineStore('tenant', {
           return 'text-amber-300';
         case 'Pro':
           return 'text-blue-400';
-        case 'Gratuito':
+        case 'Básico':
         default:
           return 'text-gray-500';
       }
@@ -231,21 +238,66 @@ export const useTenantStore = defineStore('tenant', {
       this.error = null;
       
       try {
-        // Usar la función de mocks para cargar datos
-        this.tenants = await fetchMockTenants();
-        return {
-          success: true,
-          data: this.tenants
-        };
-      } catch (err) {
+        // Use the real API service instead of mock data
+        const response = await fetchTenantsFromAPI();
+        
+        if (response.success && response.data) {
+          // Transform API response to our Tenant model
+          this.tenants = response.data.map(apiTenant => this.mapApiTenantToModel(apiTenant));
+          return {
+            success: true,
+            data: this.tenants
+          };
+        } else {
+          throw new Error(response.error || 'Error fetching tenants');
+        }
+      } catch (err: any) {
         console.error('Error al cargar tenants:', err);
-        this.error = 'No se pudieron cargar las organizaciones. Intenta de nuevo.';
+        this.error = err.message || 'No se pudieron cargar las organizaciones. Intenta de nuevo.';
         return {
           success: false,
-          error: 'No se pudieron cargar las organizaciones'
+          error: this.error
         };
       } finally {
         this.isLoading = false;
+      }
+    },
+    
+    // Helper method to map API response to our model
+    mapApiTenantToModel(apiTenant: TenantResponse): Tenant {
+      return {
+        id: apiTenant.id,
+        nombre: apiTenant.nombre,
+        logo: apiTenant.marca.logo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(apiTenant.nombre)}&background=0D9488&color=ffffff`,
+        subdominio: apiTenant.subdominio,
+        correo: '', // API doesn't provide this, we'll need to handle it
+        fechaCreacion: apiTenant.creado_en,
+        plan: this.mapPlanName(apiTenant.plan),
+        numVoluntarios: apiTenant.total_voluntarios,
+        activo: this.mapSubscriptionStatus(apiTenant.estado),
+        estadoSuscripcion: apiTenant.estado, // Store the original subscription status
+        colorPrimario: apiTenant.marca.color_primario || this.DEFAULT_COLOR,
+        fechaProximoPago: apiTenant.fecha_proximo_pago
+      };
+    },
+
+    // New helper to map subscription status to active state
+    mapSubscriptionStatus(estado: string): boolean {
+      // Only 'activo' is considered as active, other states like 'suspendido' or 'cancelado' are inactive
+      return estado === 'activo';
+    },
+    
+    // Helper to map API plan names to our UI-friendly names
+    mapPlanName(planName: string): string {
+      switch (planName.toLowerCase()) {
+        case 'premium':
+          return 'Premium';
+        case 'pro':
+          return 'Pro';
+        case 'basico':
+          return 'Básico';
+        default:
+          return planName.charAt(0).toUpperCase() + planName.slice(1);
       }
     },
     
@@ -266,6 +318,7 @@ export const useTenantStore = defineStore('tenant', {
           plan: newTenant.plan,
           numVoluntarios: 0,
           activo: true,
+          estadoSuscripcion: 'activo', // Default subscription status
           colorPrimario: newTenant.colorPrimario || this.DEFAULT_COLOR
         };
         
@@ -353,6 +406,32 @@ export const useTenantStore = defineStore('tenant', {
           success: false,
           error: 'No se pudo cambiar el estado de la organización'
         };
+      }
+    },
+
+    getSubscriptionStatusLabel(status: string): string {
+      switch (status.toLowerCase()) {
+        case 'activo':
+          return 'Activo';
+        case 'suspendido':
+          return 'Suspendido';
+        case 'cancelado':
+          return 'Cancelado';
+        default:
+          return status.charAt(0).toUpperCase() + status.slice(1);
+      }
+    },
+
+    getSubscriptionStatusColor(status: string): "success" | "warning" | "error" | "neutral" {
+      switch (status.toLowerCase()) {
+        case 'activo':
+          return 'success';
+        case 'suspendido':
+          return 'warning';
+        case 'cancelado':
+          return 'error';
+        default:
+          return 'neutral';
       }
     }
   }

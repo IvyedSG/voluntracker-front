@@ -302,6 +302,10 @@ async function handleDeletePlan() {
 onMounted(async () => {
   await loadPlans()
 })
+
+definePageMeta({
+  layout: 'admin',
+});
 </script>
 
 <style>

@@ -9,8 +9,10 @@ export interface Tenant {
   fechaCreacion: string;
   plan: string;
   numVoluntarios: number;
-  activo: boolean;
+  activo: boolean; // Derived from subscription status
+  estadoSuscripcion: string; // Original subscription status: 'activo', 'suspendido', 'cancelado'
   colorPrimario: string;
+  fechaProximoPago?: string;
 }
 
 export interface NewTenant {

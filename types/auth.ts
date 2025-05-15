@@ -1,7 +1,7 @@
 /**
  * Tipos de usuario disponibles en el sistema
  */
-export type UserType = 'admin_plataforma' | 'coordinador' | 'tenant_admin' | 'volunteer';
+export type UserType = 'admin_plataforma' | 'admin_tenant' | 'usuario_tenant';
 
 /**
  * Permisos disponibles en el sistema
