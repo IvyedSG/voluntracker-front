@@ -27,9 +27,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="p-6 space-y-6">
-    <h1 class="text-2xl font-bold text-white mb-6">Dashboard</h1>
-
+  <div class="p-6 space-y-4">
     <div v-if="error" class="text-red-500 p-4 bg-red-900/20 rounded-lg">
       {{ error }}
     </div>

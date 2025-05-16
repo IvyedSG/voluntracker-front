@@ -2,10 +2,9 @@
     <UCard class="shadow-lg">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-lg font-semibold text-gray-200">Lista de Voluntarios</h2>
-        <!-- Si estás usando la estructura de carpetas "(ong)" debería ser: -->
-        <UButton icon="i-heroicons-plus" color="primary" size="sm" to="/ong/voluntarios/nuevo">
-            Nuevo Voluntario
-        </UButton>
+        <div class="text-sm text-gray-400">
+          Total: {{ voluntarios.length }} voluntarios
+        </div>
       </div>
       
       <div class="overflow-x-auto">
@@ -42,10 +41,12 @@
               </td>
               <td class="px-4 py-2">
                 <div class="flex gap-2">
-                  <UButton icon="i-heroicons-pencil" color="gray" size="xs" variant="ghost" 
-                    :to="`/voluntarios/${v.id}`" />
+                  <UButton icon="i-heroicons-eye" color="gray" size="xs" variant="ghost" 
+                    @click="emit('view', v)" />
+                  <UButton icon="i-heroicons-pencil" color="sky" size="xs" variant="ghost" 
+                    @click="emit('edit', v)" />
                   <UButton icon="i-heroicons-trash" color="red" size="xs" variant="ghost" 
-                    @click="confirmarEliminacion(v.id)" />
+                    @click="emit('delete', v)" />
                 </div>
               </td>
             </tr>
@@ -62,15 +63,9 @@
   
   <script setup lang="ts">
   import { formatDate } from '~/utils/dateUtils';
-  import type { Voluntario } from '~/types/voluntarios'; // Agregar esta importación
+  import type { Voluntario } from '~/types/voluntarios';
   
-  const props = defineProps<{ voluntarios: Array<Voluntario> }>();
+  defineProps<{ voluntarios: Array<Voluntario> }>();
   
-  const emit = defineEmits(['delete']);
-  
-  const confirmarEliminacion = (id: string) => {
-    if (confirm('¿Estás seguro que deseas eliminar este voluntario?')) {
-      emit('delete', id);
-    }
-  };
+  const emit = defineEmits(['view', 'edit', 'delete']);
   </script>
