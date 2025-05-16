@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
@@ -17,6 +18,7 @@ export default defineNuxtConfig({
   vite: {
     plugins: [
       tailwindcss(),
+      tsconfigPaths(),
     ],
   },
   fonts: {
