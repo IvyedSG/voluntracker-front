@@ -75,7 +75,7 @@ export function useTenantForm(form: TenantForm, originalSubdomain?: Ref<string |
           return 'text-amber-300'
         case 'Pro':
           return 'text-blue-400'
-        case 'Gratuito':
+        case 'Básico':
         default:
           return 'text-gray-400'
       }

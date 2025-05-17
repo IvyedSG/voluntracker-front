@@ -1,7 +1,7 @@
 /**
  * Tipos de usuario disponibles en el sistema
  */
-export type UserType = 'admin_plataforma' | 'coordinador' | 'tenant_admin' | 'volunteer';
+export type UserType = 'admin_plataforma' | 'admin_tenant' | 'usuario_tenant';
 
 /**
  * Permisos disponibles en el sistema
@@ -29,6 +29,11 @@ export interface User {
   correo: string;
   userType: string;
   permisos: string[];
+  creado_en?: string;
+  actualizado_en?: string;
+  tenantId?: string;
+  tenantNombre?: string;
+  rol?: string;
 }
 
 /**
@@ -46,6 +51,14 @@ export interface LoginResponse {
   token: string;
   refreshToken: string;
   user: User;
+}
+
+/**
+ * Respuesta del perfil de usuario
+ */
+export interface ProfileResponse {
+  status: string;
+  data: User;
 }
 
 /**

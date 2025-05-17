@@ -187,7 +187,7 @@ const form = reactive({
   nombre: '',
   subdominio: '',
   correo: '',
-  plan: 'Gratuito',
+  plan: 'Básico',
   colorPrimario: tenantStore.DEFAULT_COLOR // Usar color por defecto del store
 });
 
@@ -281,7 +281,7 @@ function cancel() {
     nombre: '',
     subdominio: '',
     correo: '',
-    plan: 'Gratuito',
+    plan: 'Básico',
     colorPrimario: '#0D9488'
   });
   
@@ -301,7 +301,7 @@ function getPlanIcon(plan: string): string {
       return 'i-heroicons-star';
     case 'Pro':
       return 'i-heroicons-rocket-launch';
-    case 'Gratuito':
+    case 'Básico':
     default:
       return 'i-heroicons-gift';
   }
@@ -314,7 +314,7 @@ function getPlanIconClass(plan: string): string {
       return 'text-amber-300';
     case 'Pro':
       return 'text-blue-400';
-    case 'Gratuito':
+    case 'Básico':
     default:
       return 'text-gray-400';
   }

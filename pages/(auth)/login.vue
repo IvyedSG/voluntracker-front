@@ -1,5 +1,4 @@
 <template>
-  <!-- Layout integrado directamente en la página -->
   <div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-950 to-gray-900 p-4">
     <div class="w-full max-w-md">
       <!-- Contenido del formulario de login -->
@@ -95,6 +94,12 @@
 <script setup lang="ts">
 import type { LoginCredentials } from '~/types/auth'
 
+// Configurar explícitamente para evitar layout y middleware
+definePageMeta({
+  layout: false,
+  middleware: undefined
+})
+
 const auth = useAuth()
 const loading = ref(false)
 const showPassword = ref(false)
@@ -111,11 +116,11 @@ const alertInfo = reactive({
   show: false,
   title: '',
   description: '',
-  color: 'primary' as AlertColor, // Tipo correcto con valor predeterminado
+  color: 'primary' as AlertColor,
   icon: ''
 })
 
-// Función para mostrar el alert con tipo correcto
+// Función para mostrar el alert
 function showAlert(title: string, description: string, color: AlertColor) {
   alertInfo.title = title
   alertInfo.description = description
@@ -129,40 +134,38 @@ function hideAlert() {
 }
 
 async function onSubmit() {
-  // Ocultar alertas previas
   hideAlert()
   loading.value = true
   
   try {
     const result = await auth.login(form)
     
-    // Mostrar alerta de éxito (usando valor permitido)
     showAlert(
       'Inicio de sesión exitoso', 
       'Redirigiendo al panel de control...', 
       'success',
     )
     
-    // Esperar 500ms para mostrar el mensaje de éxito antes de redirigir
+    // Esperar 500ms para mostrar el mensaje de éxito
     setTimeout(() => {
       // Determinar ruta de redirección según tipo de usuario
-      const redirectPath = result.user.userType === 'admin_plataforma' ? '/tenants' : '/dashboard'
+      const redirectPath = result.user.userType === 'admin_plataforma' 
+        ? '/tenants' 
+        : '/dashboard'
       
-      // Redirección con reemplazo en el historial
-      window.location.href = redirectPath
+      // Redirección consistente con Nuxt
+      navigateTo(redirectPath, { replace: true })
     }, 500)
     
   } catch (error: unknown) {
     console.error('Error de autenticación:', error)
     
-    // Determinar el tipo de error para mostrar un mensaje apropiado
     let errorMessage = 'Error al iniciar sesión. Por favor intenta más tarde.'
     let errorTitle = 'Error de autenticación'
     
     if (error instanceof Error) {
       errorMessage = error.message
       
-      // Mostrar mensajes específicos según el tipo de error
       if (errorMessage.includes('Credenciales incorrectas')) {
         errorTitle = 'Credenciales inválidas'
       } else if (errorMessage.includes('Demasiados intentos')) {
@@ -173,12 +176,7 @@ async function onSubmit() {
       }
     }
     
-    // Mostrar alerta de error (usando valor permitido)
-    showAlert(
-      errorTitle,
-      errorMessage,
-      'error',
-    )
+    showAlert(errorTitle, errorMessage, 'error')
     
   } finally {
     loading.value = false

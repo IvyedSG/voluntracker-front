@@ -104,7 +104,7 @@
 
                 <!-- Breadcrumb -->
               <div class="flex items-center text-sm text-gray-500 ml-2">
-                <div class="h-4 w-px bg-gray-700 mx-2"></div>
+                <div class="h-4 w-px bg-gray-700 mx-2"/>
                 <UIcon name="i-heroicons-home" size="sm" class="mr-1.5 opacity-70" />
                 <span class="text-green-500/70 font-medium">Admin</span>
                 <UIcon name="i-heroicons-chevron-right" size="sm" class="mx-1.5 text-gray-700" />
@@ -134,6 +134,21 @@ const route = useRoute()
 // Obtener el usuario del estado de autenticación
 const user = computed(() => auth.user.value)
 
+// Cargar perfil actualizado al montar el componente
+onMounted(async () => {
+  try {
+    // Actualizar los datos del perfil desde el servidor
+    await auth.getProfile()
+  } catch (error) {
+    console.error('Error al cargar perfil de usuario:', error)
+  }
+  
+  // Actualizar la hora cada minuto
+  setInterval(() => {
+    currentTime.value = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+  }, 60000)
+})
+
 // Obtener las iniciales del nombre del usuario
 const getUserInitials = computed(() => {
   if (!user.value?.nombre) return 'AD'
@@ -159,7 +174,7 @@ const pageTitle = computed(() => {
   switch (route.path) {
     case '/tenants':
       return 'Gestión de Tenants'
-    case '/subscription-plans':
+    case '/plans':
       return 'Planes de Suscripción'
     case '/platform-stats':
       return 'Estadísticas de Plataforma'
@@ -190,7 +205,7 @@ const navigation = [
   },
   { 
     name: 'Planes', 
-    to: '/subscription-plans', 
+    to: '/plans', 
     icon: 'i-heroicons-credit-card', 
     activeIcon: 'i-heroicons-credit-card-solid' 
   },
@@ -276,19 +291,12 @@ const userMenuItems = [
 // Current time display
 const currentTime = ref(new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }))
 
-// Update time every minute
-onMounted(() => {
-  setInterval(() => {
-    currentTime.value = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
-  }, 60000)
-})
-
 // Get icon for current page
 function getPageIcon(path) {
   switch (path) {
     case '/tenants':
       return 'i-heroicons-building-office-2-solid'
-    case '/subscription-plans':
+    case '/plans':
       return 'i-heroicons-credit-card-solid'
     case '/platform-stats':
       return 'i-heroicons-chart-bar-solid'

@@ -132,7 +132,7 @@
 - Información de contacto
 - Branding (colores, fuentes)
 - Límites del plan (voluntarios, eventos)
-- Facturación y suscripción (Stripe)
+- Facturación y suscripción
 
 ---
 

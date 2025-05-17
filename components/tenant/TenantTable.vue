@@ -178,7 +178,7 @@ function getPlanColor(plan: string): "success" | "warning" | "primary" | "second
       return 'warning';
     case 'Pro':
       return 'info';
-    case 'Gratuito':
+    case 'Básico':
       return 'neutral';
     default:
       return 'neutral';
