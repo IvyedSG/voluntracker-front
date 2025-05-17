@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
-// import { fetchMockTenants } from '~/mocks/tenants' // We'll replace this with real API
-import { fetchTenants as fetchTenantsFromAPI } from '~/services/tenantService'
-import type { TenantResponse } from '~/services/tenantService'
+// importar el nuevo servicio
+import { fetchTenants as fetchTenantsFromAPI, createTenant as createTenantAPI } from '~/services/tenantService'
+import type { TenantResponse, CreateTenantRequest } from '~/services/tenantService'
 
 // Importar tipos desde el archivo centralizado
 import type { 
@@ -304,37 +304,80 @@ export const useTenantStore = defineStore('tenant', {
     // Crear un nuevo tenant
     async createTenant(newTenant: NewTenant): Promise<ApiResponse<Tenant>> {
       try {
-        // Aquí iría la llamada real a la API
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Crear nuevo tenant con datos del formulario
-        const newTenantData: Tenant = {
-          id: Date.now().toString(),
+        // Preparar los datos para la API según el formato requerido
+        const createRequest: CreateTenantRequest = {
           nombre: newTenant.nombre,
-          logo: newTenant.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(newTenant.nombre)}&background=0D9488&color=ffffff`,
           subdominio: newTenant.subdominio,
-          correo: newTenant.correo,
-          fechaCreacion: new Date().toISOString(),
-          plan: newTenant.plan,
-          numVoluntarios: 0,
-          activo: true,
-          estadoSuscripcion: 'activo', // Default subscription status
-          colorPrimario: newTenant.colorPrimario || this.DEFAULT_COLOR
+          marca: {
+            color_primario: newTenant.colorPrimario || this.DEFAULT_COLOR,
+            logo_url: newTenant.logo || undefined
+          },
+          suscripcion: {
+            plan: this.mapPlanToAPI(newTenant.plan),
+            estado: 'activo'
+          }
         };
         
-        // Añadir a la lista de tenants
-        this.tenants.unshift(newTenantData);
+        // Llamar a la API para crear el tenant
+        const result = await createTenantAPI(createRequest);
         
-        return {
-          success: true,
-          data: newTenantData
-        };
+        if (result.success && result.data) {
+          // Después de crear exitosamente, recargar la lista de tenants
+          // para obtener la información actualizada del servidor
+          await this.fetchTenants();
+          
+          // Buscar el tenant recién creado en la lista
+          const createdTenant = this.tenants.find(t => t.id === result.data.id);
+          
+          if (createdTenant) {
+            return {
+              success: true,
+              data: createdTenant
+            };
+          } else {
+            // Crear un objeto temporal con la información disponible
+            const tmpTenant: Tenant = {
+              id: result.data.id,
+              nombre: newTenant.nombre,
+              logo: newTenant.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(newTenant.nombre)}&background=0D9488&color=ffffff`,
+              subdominio: newTenant.subdominio,
+              correo: newTenant.correo || '',
+              fechaCreacion: new Date().toISOString(),
+              plan: newTenant.plan,
+              numVoluntarios: 0,
+              activo: true,
+              estadoSuscripcion: 'activo',
+              colorPrimario: newTenant.colorPrimario || this.DEFAULT_COLOR
+            };
+            
+            return {
+              success: true,
+              data: tmpTenant
+            };
+          }
+        } else {
+          throw new Error(result.error || 'Error al crear la organización');
+        }
       } catch (err) {
         console.error('Error al crear tenant:', err);
         return {
           success: false,
-          error: 'No se pudo crear la organización'
+          error: err instanceof Error ? err.message : 'No se pudo crear la organización'
         };
+      }
+    },
+    
+    // Agregar este método helper para mapear los nombres de planes 
+    // desde nuestra UI al formato esperado por la API
+    mapPlanToAPI(planUI: string): 'basico' | 'pro' | 'premium' {
+      switch(planUI) {
+        case 'Premium':
+          return 'premium';
+        case 'Pro':
+          return 'pro';
+        case 'Básico':
+        default:
+          return 'basico';
       }
     },
     

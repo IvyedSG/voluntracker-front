@@ -315,13 +315,13 @@ function confirmDeleteTenant(tenant: Tenant) {
 
 // Guardar nuevo tenant
 async function saveTenant(newTenant: NewTenant) {
-  isSaving.value = true
+  isSaving.value = true;
   
   try {
-    const result = await tenantStore.createTenant(newTenant)
+    const result = await tenantStore.createTenant(newTenant);
     
-    if ('success' in result && result.success && result.data) {
-      isAddTenantModalOpen.value = false
+    if (result.success) {
+      isAddTenantModalOpen.value = false;
       
       // Mostrar mensaje de éxito
       useToast().add({
@@ -329,25 +329,28 @@ async function saveTenant(newTenant: NewTenant) {
         description: `${newTenant.nombre} ha sido añadida correctamente`,
         icon: 'i-heroicons-check-circle',
         color: 'success'
-      })
+      });
+      
+      // Recargar la lista de tenants para asegurar que tenemos la última info
+      await loadTenants();
     } else {
       useToast().add({
         title: 'Error',
-        description: 'No se pudo crear la organización',
+        description: result.error || 'No se pudo crear la organización',
         icon: 'i-heroicons-exclamation-triangle',
         color: 'error'
-      })
+      });
     }
   } catch (err) {
-    console.error('Error al crear tenant:', err)
+    console.error('Error al crear tenant:', err);
     useToast().add({
       title: 'Error',
-      description: 'No se pudo crear la organización',
+      description: err instanceof Error ? err.message : 'No se pudo crear la organización',
       icon: 'i-heroicons-exclamation-triangle',
       color: 'error'
-    })
+    });
   } finally {
-    isSaving.value = false
+    isSaving.value = false;
   }
 }
 
