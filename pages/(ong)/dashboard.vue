@@ -10,7 +10,7 @@ import KpiStatsList from '~/components/dashboard/KpiStatsList.vue';
 import { useDashboard } from '~/composables/useDashboard';
 
 definePageMeta({
-  layout: 'tenantss',
+  layout: 'tenants',
 });
 
 const { stats, alerts, fetchDashboardData, isLoading, error } = useDashboard();

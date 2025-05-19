@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import VoluntariosTable from '~/components/voluntarios/VoluntariosTable.vue';
 import VoluntariosGrid from '~/components/voluntarios/VoluntariosGrid.vue';
 import VoluntariosControls from '~/components/voluntarios/VoluntariosControls.vue';
@@ -9,71 +9,53 @@ import VoluntarioDeleteModal from '~/components/voluntarios/VoluntarioDeleteModa
 import VoluntarioAddModal from '~/components/voluntarios/VoluntarioAddModal.vue';
 import { useVoluntarios } from '~/composables/useVoluntarios';
 
-// Usar el nombre correcto del layout
-definePageMeta({ layout: 'tenantss' });
 
-// Acceder al store de voluntarios
-const { voluntarios, isLoading, error, fetchVoluntarios, agregarVoluntario, eliminarVoluntario } = useVoluntarios();
+// Usar el nombre correcto del layout
+definePageMeta({ layout: 'tenants' });
+
+// Usar el composable consolidado que maneja toda la lógica
+const {
+  // Datos y acciones del store
+  voluntarios,
+  isLoading,
+  error,
+  fetchVoluntarios,
+  agregarVoluntario,
+  eliminarVoluntario,
+  actualizarVoluntario,
+  cambiarEstadoVoluntario,
+  
+  // Controles y filtros
+  viewMode,
+  controlsState,
+  estadoOptions,
+  areaOptions,
+  filteredVoluntarios,
+  resetFilters,
+  
+  // Modales
+  showAddModal,
+  showEditModal,
+  showDetailModal,
+  showDeleteModal,
+  currentVoluntario,
+  openAddModal,
+  openEditModal,
+  openDetailModal,
+  openDeleteModal,
+  closeAddModal,
+  closeEditModal,
+  closeDetailModal,
+  closeDeleteModal,
+  
+  // Utilidades
+  refreshData
+} = useVoluntarios();
 
 // Cargar datos al montar el componente
 onMounted(fetchVoluntarios);
 
-// Vista actual (tabla o grid)
-const viewMode = ref('table');
-
-// Estados modales
-const showAddModal = ref(false);
-const showEditModal = ref(false);
-const showDetailModal = ref(false);
-const showDeleteModal = ref(false);
-const currentVoluntario = ref(null);
-
-// Filtros y búsqueda
-const searchTerm = ref('');
-const filterStatus = ref('todos');
-const filterArea = ref('todas');
-
-// Lista filtrada de voluntarios
-const filteredVoluntarios = computed(() => {
-  if (!voluntarios.value) return [];
-  
-  return voluntarios.value.filter(v => {
-    // Filtrar por término de búsqueda
-    const matchSearch = searchTerm.value === '' || 
-      v.nombre.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-      v.correo.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-      v.dni.toLowerCase().includes(searchTerm.value.toLowerCase());
-    
-    // Filtrar por estado
-    const matchStatus = filterStatus.value === 'todos' || v.estado === filterStatus.value;
-    
-    // Filtrar por área
-    const matchArea = filterArea.value === 'todas' || v.area === filterArea.value;
-    
-    return matchSearch && matchStatus && matchArea;
-  });
-});
-
-// Funciones para gestionar voluntarios
-const openAddModal = () => {
-  showAddModal.value = true;
-};
-
-const openEditModal = (voluntario) => {
-  currentVoluntario.value = voluntario;
-  showEditModal.value = true;
-};
-
-const openDetailModal = (voluntario) => {
-  currentVoluntario.value = voluntario;
-  showDetailModal.value = true;
-};
-
-const openDeleteModal = (voluntario) => {
-  currentVoluntario.value = voluntario;
-  showDeleteModal.value = true;
-};
-
+// Funciones para manejar acciones CRUD con feedback de UI
 const handleDelete = async (id) => {
   const success = await eliminarVoluntario(id);
   if (success) {
@@ -94,19 +76,26 @@ const handleAdd = async (voluntarioData) => {
 };
 
 const handleUpdate = async (voluntarioData) => {
-  // Implementar la funcionalidad de actualización
-  showEditModal.value = false;
-  useToast().success('Voluntario actualizado correctamente');
+  const success = await actualizarVoluntario(voluntarioData);
+  if (success) {
+    showEditModal.value = false;
+    useToast().success('Voluntario actualizado correctamente');
+  } else {
+    useToast().error('Error al actualizar el voluntario');
+  }
 };
 
-// Áreas y estados disponibles para filtrar
-const areas = computed(() => {
-  if (!voluntarios.value) return ['todas'];
-  const uniqueAreas = new Set(voluntarios.value.map(v => v.area));
-  return ['todas', ...Array.from(uniqueAreas)];
-});
-
-const estados = ['todos', 'activo', 'inactivo'];
+const toggleVoluntarioStatus = (voluntario) => {
+  const nuevoEstado = voluntario.estado === 'activo' ? 'inactivo' : 'activo';
+  cambiarEstadoVoluntario(voluntario.id, nuevoEstado)
+    .then(success => {
+      if (success) {
+        useToast().success(`Estado cambiado a: ${nuevoEstado}`);
+      } else {
+        useToast().error('Error al cambiar el estado');
+      }
+    });
+};
 </script>
 
 <template>
@@ -117,7 +106,7 @@ const estados = ['todos', 'activo', 'inactivo'];
       :estadoOptions="estadoOptions"
       :areaOptions="areaOptions"
       @add="openAddModal"
-      @reset="fetchVoluntarios"
+      @reset="refreshData"
     />
     
     <!-- Indicadores de carga y error -->
@@ -131,20 +120,24 @@ const estados = ['todos', 'activo', 'inactivo'];
     
     <!-- Modo Tabla -->
     <VoluntariosTable 
-      v-if="!isLoading && !error && viewMode === 'table'"
+      v-if="!isLoading && !error && viewMode === 'table' && filteredVoluntarios.length > 0"
       :voluntarios="filteredVoluntarios"
       @view="openDetailModal"
       @edit="openEditModal"
       @delete="openDeleteModal"
+      @toggle-status="toggleVoluntarioStatus"
+      @add="openAddModal"
     />
     
     <!-- Modo Grid -->
     <VoluntariosGrid
-      v-if="!isLoading && !error && viewMode === 'grid'"
+      v-if="!isLoading && !error && viewMode === 'grid' && filteredVoluntarios.length > 0"
       :voluntarios="filteredVoluntarios"
       @view="openDetailModal"
       @edit="openEditModal"
       @delete="openDeleteModal"
+      @toggle-status="toggleVoluntarioStatus"
+      @add="openAddModal"
     />
     
     <!-- Mensaje de no resultados -->
@@ -152,9 +145,9 @@ const estados = ['todos', 'activo', 'inactivo'];
       v-if="!isLoading && !error && filteredVoluntarios.length === 0" 
       class="bg-gray-800/50 border border-gray-700/50 rounded-lg p-12 text-center text-gray-400"
     >
-      <UIcon name="i-heroicons-user-slash" class="h-12 w-12 mx-auto mb-4 opacity-50" />
+      <UIcon name="i-heroicons-user-minus" class="h-12 w-12 mx-auto mb-4 opacity-50" />
       <p class="text-lg">No se encontraron voluntarios</p>
-      <p v-if="searchTerm || filterStatus !== 'todos' || filterArea !== 'todas'" class="text-sm mt-2">
+      <p v-if="controlsState.search || controlsState.estado !== null || controlsState.area !== null" class="text-sm mt-2">
         Prueba con otros criterios de búsqueda o elimina los filtros
       </p>
       <UButton class="mt-4" @click="openAddModal">Agregar voluntario</UButton>
@@ -162,21 +155,26 @@ const estados = ['todos', 'activo', 'inactivo'];
     
     <!-- Modales -->
     <VoluntarioDetailModal
+      v-if="currentVoluntario"
       v-model="showDetailModal"
       :voluntario="currentVoluntario"
       @edit="openEditModal(currentVoluntario)"
     />
     
     <VoluntarioEditModal
+      v-if="currentVoluntario"
       v-model="showEditModal"
       :voluntario="currentVoluntario"
       @submit="handleUpdate"
+      @cancel="closeEditModal"
     />
     
     <VoluntarioDeleteModal
+      v-if="currentVoluntario"
       v-model="showDeleteModal"
       :voluntario="currentVoluntario"
       @confirm="handleDelete(currentVoluntario?.id)"
+      @cancel="closeDeleteModal"
     />
     
     <VoluntarioAddModal

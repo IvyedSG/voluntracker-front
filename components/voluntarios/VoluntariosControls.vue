@@ -1,39 +1,46 @@
 <template>
-  <div class="mb-6 flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
+  <div class="mb-6 flex flex-col md:flex-row justify-between gap-5 items-start md:items-center">
     <!-- Búsqueda y visualización -->
     <div class="w-full md:w-auto flex flex-col sm:flex-row gap-3">
       <UInput
         v-model="searchModel"
         icon="i-heroicons-magnifying-glass"
         placeholder="Buscar voluntario..."
-        class="w-full md:w-80"
+        class="w-full md:w-80 shadow-md backdrop-blur-lg"
+        size="lg"
+        color="white"
       />
-      <UButtonGroup class="hidden sm:flex">
+      <UButtonGroup class="hidden sm:flex bg-gray-800/40 backdrop-blur-md p-1 rounded-xl shadow-md">
         <UButton
           :color="viewModel === 'table' ? 'success' : 'neutral'"
-          variant="ghost"
+          :variant="viewModel === 'table' ? 'solid' : 'ghost'"
           :icon="viewModel === 'table' ? 'i-heroicons-table-cells-solid' : 'i-heroicons-table-cells'"
+          size="lg"
+          class="px-4"
           @click="viewModel = 'table'"
         />
         <UButton
           :color="viewModel === 'grid' ? 'success' : 'neutral'"
-          variant="ghost"
+          :variant="viewModel === 'grid' ? 'solid' : 'ghost'"
           :icon="viewModel === 'grid' ? 'i-heroicons-squares-2x2-solid' : 'i-heroicons-squares-2x2'"
+          size="lg" 
+          class="px-4"
           @click="viewModel = 'grid'"
         />
       </UButtonGroup>
     </div>
 
     <!-- Filtros y acciones -->
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-wrap gap-3 w-full sm:w-auto">
       <!-- Selector de estado -->
       <USelect
         v-model="estadoModel"
         :items="estadoItems"
         placeholder="Estado"
         icon="i-heroicons-flag"
-        size="md"
-        class="w-28 sm:w-40"
+        size="lg"
+        class="w-full sm:w-40 shadow-md backdrop-blur-lg"
+        color="white"
       >
         <template #item="{ item }">
           <div class="flex items-center gap-2">
@@ -52,8 +59,9 @@
         :items="areaItems"
         placeholder="Área"
         icon="i-heroicons-briefcase"
-        size="md"
-        class="w-28 sm:w-52"
+        size="lg"
+        class="w-full sm:w-52 shadow-md backdrop-blur-lg"
+        color="white"
       >
         <template #item="{ item }">
           <div class="flex items-center gap-2">
@@ -65,8 +73,10 @@
       <UButton
         v-if="hasActiveFilters"
         color="neutral"
-        variant="ghost"
+        variant="soft"
         icon="i-heroicons-funnel"
+        size="lg"
+        class="shadow-md backdrop-blur-lg"
         @click="resetAllFilters"
       >
         Limpiar
@@ -74,7 +84,9 @@
       <UButton
         color="success"
         variant="solid"
-        icon="i-heroicons-plus"
+        icon="i-heroicons-user-plus"
+        size="lg"
+        class="shadow-md backdrop-blur-lg"
         @click="emit('add')"
       >
         Añadir

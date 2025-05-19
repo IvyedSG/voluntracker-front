@@ -177,7 +177,7 @@ const pageTitle = computed(() => {
 switch (route.path) {
   case '/dashboard':
     return 'Panel Principal';
-  case '/volunteers':
+  case '/voluntarios':
     return 'Gestión de Equipo';
   case '/operaciones':
     return 'Eventos y Actividades';
@@ -203,7 +203,7 @@ const pageBadge = computed(() => {
   switch (route.path) {
     case '/dashboard':
       return 'Lider de la Organización';
-    case '/volunteers':
+    case '/voluntarios':
       return 'Gestión de Equipo';
     case '/reports':
       return 'Análisis Detallado';
@@ -215,7 +215,7 @@ const pageBadge = computed(() => {
 // Navegación reorganizada con categorías y submenús
 const navigationMain = [
   { name: 'Inicio', to: '/dashboard', icon: 'i-heroicons-home', activeIcon: 'i-heroicons-home-solid' },
-  { name: 'Voluntarios', to: '/volunteers', icon: 'i-heroicons-user-group', activeIcon: 'i-heroicons-user-group-solid' },
+  { name: 'Voluntarios', to: '/voluntarios', icon: 'i-heroicons-user-group', activeIcon: 'i-heroicons-user-group-solid' },
 ];
 
 // Categorías con submenús
