@@ -74,6 +74,7 @@
             <span class="text-xs text-gray-500">{{ coordinador.areasAsignadas.length }} áreas</span>
           </div>
           
+          
           <!-- Áreas -->
           <div class="mt-2 flex flex-wrap gap-1.5">
             <UBadge
