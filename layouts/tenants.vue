@@ -181,7 +181,7 @@ switch (route.path) {
     return 'Gestión de Equipo';
   case '/operaciones':
     return 'Eventos y Actividades';
-  case '/roles':
+  case '/coordinadores':
     return 'Líderes y Coordinadores';
   case '/reports':
     return 'Análisis de Datos';
@@ -205,8 +205,8 @@ const pageBadge = computed(() => {
       return 'Lider de la Organización';
     case '/voluntarios':
       return 'Gestión de Equipo';
-    case '/reports':
-      return 'Análisis Detallado';
+    case '/coordinadores':
+      return 'Líderes y Coordinadores';
     default:
       return null;
   }
@@ -226,7 +226,7 @@ const navigationCategories = [
     activeIcon: 'i-heroicons-clipboard-document-list-solid',
     children: [
       { name: 'Operaciones', to: '/operaciones', icon: 'i-heroicons-calendar' },
-      { name: 'Coordinadores', to: '/roles', icon: 'i-heroicons-shield-check' },
+      { name: 'Coordinadores', to: '/coordinadores', icon: 'i-heroicons-shield-check' },
     ]
   },
   { 
