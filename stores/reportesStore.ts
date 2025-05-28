@@ -2,20 +2,19 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import type {
   FiltrosReporte,
-  DataReporte,
   MetricaReporte,
-  ReporteParticipacionArea,
-  ReporteDesercionVoluntarios,
-  ReporteTareas,
-  PrediccionAlerta,
+  DataReporte,
   GeneracionReporte,
+  PrediccionAlerta,
   PeriodoTiempo,
 } from "~/types/reportes";
-
 import {
   reportesMetricas,
   reportesGraficos,
-  reportesPrediccion,
+  alertasPrediccionMock,
+  datosVoluntariosMock,
+  datosAreasMock,
+  datosTareasMock,
 } from "~/mocks/reportes";
 
 export const useReportesStore = defineStore("reportes", () => {
@@ -38,6 +37,11 @@ export const useReportesStore = defineStore("reportes", () => {
   const graficos = ref<Record<string, DataReporte>>({});
   const reportesGuardados = ref<GeneracionReporte[]>([]);
   const alertasPrediccion = ref<PrediccionAlerta[]>([]);
+
+  // Nuevos estados para datos específicos
+  const datosVoluntarios = ref<any>(null);
+  const datosAreas = ref<any>(null);
+  const datosTareas = ref<any>(null);
 
   // Getters
   const metricasActuales = computed(() => metricas.value);
@@ -78,13 +82,16 @@ export const useReportesStore = defineStore("reportes", () => {
     error.value = null;
 
     try {
-      // En producción, aquí harías llamadas a API
-      // Para desarrollo, usamos datos mock
-      await new Promise((resolve) => setTimeout(resolve, 800)); // Simular delay
+      // Simular carga de API
+      await new Promise((resolve) => setTimeout(resolve, 800));
 
+      // Cargar datos desde mocks
       metricas.value = reportesMetricas;
       graficos.value = reportesGraficos;
-      alertasPrediccion.value = reportesPrediccion;
+      alertasPrediccion.value = alertasPrediccionMock;
+      datosVoluntarios.value = datosVoluntariosMock;
+      datosAreas.value = datosAreasMock;
+      datosTareas.value = datosTareasMock;
     } catch (err: any) {
       error.value = err.message || "Error al cargar los reportes";
     } finally {
@@ -96,61 +103,19 @@ export const useReportesStore = defineStore("reportes", () => {
     cargando.value = true;
     try {
       // Simular tiempo de generación basado en el formato
-      const tiempoGeneracion: Record<string, number> = {
-        pdf: 2000,
-        excel: 1500,
-        csv: 800,
-        sheets: 2500,
-        "google-sheets": 2500,
-      };
-
-      await new Promise((resolve) =>
-        setTimeout(resolve, tiempoGeneracion[datosReporte.formato] || 1500)
-      );
-
-      // Simular descarga del archivo
-      const formatosPretty: Record<string, string> = {
-        pdf: "PDF",
-        excel: "Excel",
-        csv: "CSV",
-        sheets: "Google Sheets",
-        "google-sheets": "Google Sheets",
-      };
-
-      // Crear objeto para guardar en reportes guardados
-      const reporteParaGuardar: GeneracionReporte = {
-        id: datosReporte.id || `reporte-${Date.now()}`,
-        nombre:
-          datosReporte.nombreArchivo ||
-          `Reporte ${formatosPretty[datosReporte.formato]}`,
-        descripcion: `Reporte generado desde ${datosReporte.tabOrigen}`,
-        tipoReporte: datosReporte.tabOrigen,
-        formato: datosReporte.formato,
-        periodo: "mes",
-        filtros: datosReporte.datos?.filtros || filtrosActuales.value,
-        fechaCreacion: new Date().toISOString(),
-        ultimaGeneracion: new Date().toISOString(),
-        programado: false,
-      };
-
-      // Agregar a reportes guardados
-      if (
-        !reportesGuardados.value.find((r) => r.id === reporteParaGuardar.id)
-      ) {
-        reportesGuardados.value.push(reporteParaGuardar);
-      }
+      const tiempoGeneracion =
+        datosReporte.formato === "pdf" ? 2000 : 1500;
+      await new Promise((resolve) => setTimeout(resolve, tiempoGeneracion));
 
       return {
         success: true,
-        message: `Reporte generado exitosamente en formato ${formatosPretty[datosReporte.formato]}`,
-        url: `#`,
-        tamaño: `${(Math.random() * 5 + 1).toFixed(1)} MB`,
+        message: `Reporte ${datosReporte.formato.toUpperCase()} generado exitosamente`,
+        url: `/downloads/reporte-${Date.now()}.${datosReporte.formato}`,
       };
     } catch (err: any) {
-      error.value = err.message || "Error generando el reporte";
       return {
         success: false,
-        message: error.value,
+        message: err.message || "Error al generar el reporte",
       };
     } finally {
       cargando.value = false;
@@ -170,6 +135,9 @@ export const useReportesStore = defineStore("reportes", () => {
     graficos,
     reportesGuardados,
     alertasPrediccion,
+    datosVoluntarios,
+    datosAreas,
+    datosTareas,
 
     // Getters
     metricasActuales,

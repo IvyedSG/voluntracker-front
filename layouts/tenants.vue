@@ -191,7 +191,7 @@ switch (route.path) {
     return 'Diplomas y Certificados';
   case '/integrations':
     return 'Conexiones Externas';
-  case '/ong-settings':
+  case '/configuraciones':
     return 'Configuración';
   default:
     return 'Panel de Control';
@@ -247,7 +247,7 @@ const navigationCategories = [
     children: [
       { name: 'Notificaciones', to: '/notifications', icon: 'i-heroicons-bell' },
       { name: 'Integraciones', to: '/integrations', icon: 'i-heroicons-link' },
-      { name: 'Configuración', to: '/ong-settings', icon: 'i-heroicons-wrench-screwdriver' },
+      { name: 'Configuración', to: '/configuraciones', icon: 'i-heroicons-wrench-screwdriver' },
     ]
   },
 ];

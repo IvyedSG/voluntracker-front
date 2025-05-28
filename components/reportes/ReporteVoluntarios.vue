@@ -8,10 +8,10 @@
         <div class="flex items-center justify-between mb-4">
           <div>
             <p class="text-gray-400 text-sm font-medium">Voluntarios Activos</p>
-            <p class="text-2xl font-bold text-white mt-1 group-hover:text-blue-300 transition-colors">{{ datos.activos }}</p>
+            <p class="text-2xl font-bold text-white mt-1">{{ datos.activos }}</p>
           </div>
           <div class="w-12 h-12 bg-gradient-to-br from-blue-900/40 to-blue-800/20 rounded-lg flex items-center justify-center shadow-md border border-blue-800/20">
-            <UIcon name="i-heroicons-user-group" class="h-6 w-6 text-blue-400 group-hover:text-blue-300 transition-colors" />
+            <UIcon name="i-heroicons-user-group" class="h-6 w-6 text-blue-400" />
           </div>
         </div>
         <div class="flex items-center text-sm">
@@ -25,10 +25,10 @@
         <div class="flex items-center justify-between mb-4">
           <div>
             <p class="text-gray-400 text-sm font-medium">Voluntarios Inactivos</p>
-            <p class="text-2xl font-bold text-white mt-1 group-hover:text-yellow-300 transition-colors">{{ datos.inactivos }}</p>
+            <p class="text-2xl font-bold text-white mt-1">{{ datos.inactivos }}</p>
           </div>
           <div class="w-12 h-12 bg-gradient-to-br from-yellow-900/40 to-yellow-800/20 rounded-lg flex items-center justify-center shadow-md border border-yellow-800/20">
-            <UIcon name="i-heroicons-user-minus" class="h-6 w-6 text-yellow-400 group-hover:text-yellow-300 transition-colors" />
+            <UIcon name="i-heroicons-user-minus" class="h-6 w-6 text-yellow-400" />
           </div>
         </div>
         <div class="flex items-center text-sm">
@@ -43,21 +43,17 @@
         <div class="flex items-center justify-between mb-4">
           <div>
             <p class="text-gray-400 text-sm font-medium">Tasa de Deserción</p>
-            <p 
-              class="text-2xl font-bold mt-1 transition-colors"
-              :class="datos.desercion > 10 ? 'text-red-400 group-hover:text-red-300' : 'text-white group-hover:text-purple-300'"
-            >{{ datos.desercion }}%</p>
+            <p class="text-2xl font-bold text-white mt-1">{{ datos.desercion }}%</p>
           </div>
           <div class="w-12 h-12 bg-gradient-to-br from-purple-900/40 to-purple-800/20 rounded-lg flex items-center justify-center shadow-md border border-purple-800/20">
-            <UIcon name="i-heroicons-chart-bar" class="h-6 w-6 text-purple-400 group-hover:text-purple-300 transition-colors" />
+            <UIcon name="i-heroicons-arrow-trending-down" class="h-6 w-6 text-purple-400" />
           </div>
         </div>
         <div class="flex items-center text-sm">
           <span 
-            class="font-medium mr-1"
             :class="desercionTendencia === 'subiendo' ? 'text-red-400' : 'text-green-400'"
           >
-            {{ desercionTendencia === 'subiendo' ? '↑' : '↓' }} {{ desercionCambio }}%
+            {{ desercionTendencia === 'subiendo' ? '↗' : '↘' }} {{ desercionCambio }}%
           </span>
           <span class="text-gray-400">respecto al mes anterior</span>
         </div>
@@ -68,10 +64,10 @@
         <div class="flex items-center justify-between mb-4">
           <div>
             <p class="text-gray-400 text-sm font-medium">Retención</p>
-            <p class="text-2xl font-bold text-white mt-1 group-hover:text-green-300 transition-colors">{{ retencion }}%</p>
+            <p class="text-2xl font-bold text-white mt-1">{{ retencion }}%</p>
           </div>
           <div class="w-12 h-12 bg-gradient-to-br from-green-900/40 to-green-800/20 rounded-lg flex items-center justify-center shadow-md border border-green-800/20">
-            <UIcon name="i-heroicons-user-plus" class="h-6 w-6 text-green-400 group-hover:text-green-300 transition-colors" />
+            <UIcon name="i-heroicons-arrow-trending-up" class="h-6 w-6 text-green-400" />
           </div>
         </div>
         <div class="flex items-center text-sm">
@@ -113,48 +109,43 @@
         <table class="w-full">
           <thead class="bg-gray-900/50">
             <tr>
-              <th class="px-4 py-3.5 text-left text-xs font-semibold text-purple-300 uppercase tracking-wider">Nombre</th>
-              <th class="px-4 py-3.5 text-left text-xs font-semibold text-purple-300 uppercase tracking-wider">Fecha de Ingreso</th>
-              <th class="px-4 py-3.5 text-left text-xs font-semibold text-purple-300 uppercase tracking-wider">Área</th>
-              <th class="px-4 py-3.5 text-left text-xs font-semibold text-purple-300 uppercase tracking-wider">Estado</th>
-              <th class="px-4 py-3.5 text-left text-xs font-semibold text-purple-300 uppercase tracking-wider">Acciones</th>
+              <th class="px-4 py-3.5 text-left text-xs font-semibold text-purple-300 uppercase tracking-wider">Voluntario</th>
+              <th class="px-4 py-3.5 text-left text-xs font-semibold text-purple-300 uppercase tracking-wider">Email</th>
+              <th class="px-4 py-3.5 text-center text-xs font-semibold text-purple-300 uppercase tracking-wider">Fecha Ingreso</th>
+              <th class="px-4 py-3.5 text-center text-xs font-semibold text-purple-300 uppercase tracking-wider">Área</th>
+              <th class="px-4 py-3.5 text-center text-xs font-semibold text-purple-300 uppercase tracking-wider">Estado</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-800">
-            <tr v-for="(voluntario, index) in voluntariosRecientes" :key="index" class="hover:bg-gray-700/20">
-              <td class="px-4 py-4">
+            <tr 
+              v-for="voluntario in voluntariosRecientes.slice(0, 5)" 
+              :key="voluntario.email"
+              class="hover:bg-gray-700/20"
+            >
+              <td class="px-4 py-4 whitespace-nowrap">
                 <div class="flex items-center">
-                  <div class="flex-shrink-0 h-8 w-8 bg-purple-900/30 border border-purple-800/20 rounded-full flex items-center justify-center text-purple-400 font-medium">
-                    {{ getInitials(voluntario.nombre) }}
+                  <div class="w-8 h-8 bg-purple-900/40 rounded-full flex items-center justify-center border border-purple-800/30 mr-3">
+                    <span class="text-xs font-medium text-purple-300">{{ getInitials(voluntario.nombre) }}</span>
                   </div>
-                  <div class="ml-3">
-                    <p class="text-sm font-medium text-white">{{ voluntario.nombre }}</p>
-                    <p class="text-xs text-gray-400">{{ voluntario.email }}</p>
-                  </div>
+                  <span class="text-sm font-medium text-white">{{ voluntario.nombre }}</span>
                 </div>
               </td>
-              <td class="px-4 py-4 text-sm text-gray-300">{{ formatDate(voluntario.fechaIngreso) }}</td>
-              <td class="px-4 py-4">
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">
+              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-400">{{ voluntario.email }}</td>
+              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-400 text-center">{{ formatDate(voluntario.fechaIngreso) }}</td>
+              <td class="px-4 py-4 whitespace-nowrap text-center">
+                <span class="px-2 py-1 text-xs rounded-full bg-blue-900/20 text-blue-400 border border-blue-800/30">
                   {{ voluntario.area }}
                 </span>
               </td>
-              <td class="px-4 py-4">
+              <td class="px-4 py-4 whitespace-nowrap text-center">
                 <span 
-                  class="px-2.5 py-0.5 rounded-full text-xs font-medium inline-flex items-center"
-                  :class="voluntario.activo ? 'bg-green-900/20 text-green-400 border border-green-800/30' : 'bg-yellow-900/20 text-yellow-400 border border-yellow-800/30'"
+                  class="px-2 py-1 text-xs rounded-full border"
+                  :class="voluntario.activo 
+                    ? 'bg-green-900/20 text-green-400 border-green-800/30' 
+                    : 'bg-red-900/20 text-red-400 border-red-800/30'"
                 >
-                  <div class="w-1.5 h-1.5 rounded-full mr-1.5" :class="voluntario.activo ? 'bg-green-400' : 'bg-yellow-400'"></div>
                   {{ voluntario.activo ? 'Activo' : 'Inactivo' }}
                 </span>
-              </td>
-              <td class="px-4 py-4">
-                <button class="text-gray-400 hover:text-purple-400 mr-2">
-                  <UIcon name="i-heroicons-eye" class="h-4 w-4" />
-                </button>
-                <button class="text-gray-400 hover:text-blue-400">
-                  <UIcon name="i-heroicons-envelope" class="h-4 w-4" />
-                </button>
               </td>
             </tr>
           </tbody>

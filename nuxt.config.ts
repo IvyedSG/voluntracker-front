@@ -54,4 +54,15 @@ export default defineNuxtConfig({
     fallback: "dark",
     classSuffix: "",
   },
+  components: [
+    { 
+      path: '~/components', 
+      pathPrefix: false 
+    },
+    {
+      path: '~/components/configuracion',
+      prefix: 'configuracion',
+      global: true
+    }
+  ],
 });

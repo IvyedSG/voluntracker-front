@@ -8,15 +8,15 @@
         <div class="flex items-center justify-between mb-4">
           <div>
             <p class="text-gray-400 text-sm font-medium">Tareas Completadas</p>
-            <p class="text-2xl font-bold text-white mt-1 group-hover:text-green-300 transition-colors">{{ datos.completadas }}</p>
+            <p class="text-2xl font-bold text-white mt-1">{{ datos.completadas }}</p>
           </div>
           <div class="w-12 h-12 bg-gradient-to-br from-green-900/40 to-green-800/20 rounded-lg flex items-center justify-center shadow-md border border-green-800/20">
-            <UIcon name="i-heroicons-check-circle" class="h-6 w-6 text-green-400 group-hover:text-green-300 transition-colors" />
+            <UIcon name="i-heroicons-check-circle" class="h-6 w-6 text-green-400" />
           </div>
         </div>
         <div class="flex items-center text-sm">
           <span class="text-green-400 font-medium">{{ porcentajeCompletadas }}%</span>
-          <span class="text-gray-400 ml-1">de efectividad</span>
+          <span class="text-gray-400 ml-1">del total</span>
         </div>
       </div>
       
@@ -25,10 +25,10 @@
         <div class="flex items-center justify-between mb-4">
           <div>
             <p class="text-gray-400 text-sm font-medium">Tareas Pendientes</p>
-            <p class="text-2xl font-bold text-white mt-1 group-hover:text-yellow-300 transition-colors">{{ datos.pendientes }}</p>
+            <p class="text-2xl font-bold text-white mt-1">{{ datos.pendientes }}</p>
           </div>
           <div class="w-12 h-12 bg-gradient-to-br from-yellow-900/40 to-yellow-800/20 rounded-lg flex items-center justify-center shadow-md border border-yellow-800/20">
-            <UIcon name="i-heroicons-clock" class="h-6 w-6 text-yellow-400 group-hover:text-yellow-300 transition-colors" />
+            <UIcon name="i-heroicons-clock" class="h-6 w-6 text-yellow-400" />
           </div>
         </div>
         <div class="flex items-center text-sm">
@@ -42,10 +42,10 @@
         <div class="flex items-center justify-between mb-4">
           <div>
             <p class="text-gray-400 text-sm font-medium">Tareas Vencidas</p>
-            <p class="text-2xl font-bold text-white mt-1 group-hover:text-red-300 transition-colors">{{ datos.vencidas }}</p>
+            <p class="text-2xl font-bold text-white mt-1">{{ datos.vencidas }}</p>
           </div>
           <div class="w-12 h-12 bg-gradient-to-br from-red-900/40 to-red-800/20 rounded-lg flex items-center justify-center shadow-md border border-red-800/20">
-            <UIcon name="i-heroicons-exclamation-triangle" class="h-6 w-6 text-red-400 group-hover:text-red-300 transition-colors" />
+            <UIcon name="i-heroicons-exclamation-triangle" class="h-6 w-6 text-red-400" />
           </div>
         </div>
         <div class="flex items-center text-sm">
@@ -59,15 +59,15 @@
         <div class="flex items-center justify-between mb-4">
           <div>
             <p class="text-gray-400 text-sm font-medium">Tiempo Promedio</p>
-            <p class="text-2xl font-bold text-white mt-1 group-hover:text-blue-300 transition-colors">{{ tiempoPromedio }}d</p>
+            <p class="text-2xl font-bold text-white mt-1">{{ tiempoPromedio }}d</p>
           </div>
-          <div class="w-12 h-12 bg-gradient-to-br from-blue-900/40 to-blue-800/20 rounded-lg flex items-center justify-center shadow-md border border-blue-800/20">
-            <UIcon name="i-heroicons-chart-bar-square" class="h-6 w-6 text-blue-400 group-hover:text-blue-300 transition-colors" />
+          <div class="w-12 h-12 bg-gradient-to-br from-purple-900/40 to-purple-800/20 rounded-lg flex items-center justify-center shadow-md border border-purple-800/20">
+            <UIcon name="i-heroicons-calendar-days" class="h-6 w-6 text-purple-400" />
           </div>
         </div>
         <div class="flex items-center text-sm">
-          <span class="text-blue-400 font-medium">{{ mejoraTiempo }}%</span>
-          <span class="text-gray-400 ml-1">mejora vs mes anterior</span>
+          <span class="text-green-400 font-medium">-{{ mejoraTiempo }}%</span>
+          <span class="text-gray-400 ml-1">mejora vs anterior</span>
         </div>
       </div>
     </div>
@@ -77,7 +77,7 @@
       <!-- Tendencia de tareas -->
       <ReporteChart
         titulo="Tendencia de Tareas"
-        descripcion="Evolución de tareas creadas vs completadas"
+        descripcion="Evolución de tareas creadas y completadas"
         :datos="datosTendencia"
         tipo="table"
         :cargando="cargando"
@@ -86,7 +86,7 @@
       <!-- Distribución por prioridad -->
       <ReporteChart
         titulo="Distribución por Prioridad"
-        descripcion="Clasificación de tareas según su nivel de prioridad"
+        descripcion="Tareas organizadas por nivel de prioridad"
         :datos="datosPrioridad"
         tipo="list"
         :cargando="cargando"
@@ -97,7 +97,7 @@
       <!-- Distribución por tipo -->
       <ReporteChart
         titulo="Distribución por Tipo"
-        descripcion="Cantidad de tareas según su categoría"
+        descripcion="Clasificación de tareas por categoría"
         :datos="datosTipo"
         tipo="list"
         :cargando="cargando"
@@ -125,54 +125,58 @@
           <thead class="bg-gray-900/50">
             <tr>
               <th class="px-4 py-3.5 text-left text-xs font-semibold text-purple-300 uppercase tracking-wider">Tarea</th>
-              <th class="px-4 py-3.5 text-left text-xs font-semibold text-purple-300 uppercase tracking-wider">Asignado a</th>
-              <th class="px-4 py-3.5 text-left text-xs font-semibold text-purple-300 uppercase tracking-wider">Prioridad</th>
-              <th class="px-4 py-3.5 text-left text-xs font-semibold text-purple-300 uppercase tracking-wider">Fecha Límite</th>
-              <th class="px-4 py-3.5 text-left text-xs font-semibold text-purple-300 uppercase tracking-wider">Estado</th>
-              <th class="px-4 py-3.5 text-left text-xs font-semibold text-purple-300 uppercase tracking-wider">Progreso</th>
+              <th class="px-4 py-3.5 text-left text-xs font-semibold text-purple-300 uppercase tracking-wider">Asignado</th>
+              <th class="px-4 py-3.5 text-center text-xs font-semibold text-purple-300 uppercase tracking-wider">Prioridad</th>
+              <th class="px-4 py-3.5 text-center text-xs font-semibold text-purple-300 uppercase tracking-wider">Fecha Límite</th>
+              <th class="px-4 py-3.5 text-center text-xs font-semibold text-purple-300 uppercase tracking-wider">Estado</th>
+              <th class="px-4 py-3.5 text-center text-xs font-semibold text-purple-300 uppercase tracking-wider">Progreso</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-800">
-            <tr v-for="(tarea, index) in tareasRecientes" :key="index" class="hover:bg-gray-700/20">
+            <tr 
+              v-for="tarea in tareasRecientes.slice(0, 5)" 
+              :key="tarea.titulo"
+              class="hover:bg-gray-700/20"
+            >
               <td class="px-4 py-4">
                 <div>
-                  <p class="text-sm font-medium text-white">{{ tarea.titulo }}</p>
-                  <p class="text-xs text-gray-400">{{ tarea.descripcion }}</p>
+                  <div class="text-sm font-medium text-white">{{ tarea.titulo }}</div>
+                  <div class="text-xs text-gray-400 mt-1">{{ tarea.descripcion }}</div>
                 </div>
               </td>
-              <td class="px-4 py-4">
+              <td class="px-4 py-4 whitespace-nowrap">
                 <div class="flex items-center">
-                  <div class="flex-shrink-0 h-8 w-8 bg-purple-900/30 border border-purple-800/20 rounded-full flex items-center justify-center text-purple-400 font-medium">
-                    {{ getInitials(tarea.asignadoA) }}
+                  <div class="w-8 h-8 bg-purple-900/40 rounded-full flex items-center justify-center border border-purple-800/30 mr-3">
+                    <span class="text-xs font-medium text-purple-300">{{ getInitials(tarea.asignadoA) }}</span>
                   </div>
-                  <div class="ml-3">
-                    <p class="text-sm text-white">{{ tarea.asignadoA }}</p>
-                  </div>
+                  <span class="text-sm text-gray-300">{{ tarea.asignadoA }}</span>
                 </div>
               </td>
-              <td class="px-4 py-4">
+              <td class="px-4 py-4 whitespace-nowrap text-center">
                 <span 
-                  class="px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  class="px-2 py-1 text-xs rounded-full border"
                   :class="getPrioridadClass(tarea.prioridad)"
                 >
                   {{ tarea.prioridad }}
                 </span>
               </td>
-              <td class="px-4 py-4 text-sm text-gray-300">{{ formatDate(tarea.fechaLimite) }}</td>
-              <td class="px-4 py-4">
-                <span 
-                  class="px-2.5 py-0.5 rounded-full text-xs font-medium inline-flex items-center"
-                  :class="getEstadoClass(tarea.estado)"
-                >
-                  <div class="w-1.5 h-1.5 rounded-full mr-1.5" :class="getEstadoDotClass(tarea.estado)"></div>
-                  {{ tarea.estado }}
-                </span>
+              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-400 text-center">{{ formatDate(tarea.fechaLimite) }}</td>
+              <td class="px-4 py-4 whitespace-nowrap text-center">
+                <div class="flex items-center justify-center">
+                  <div class="w-2 h-2 rounded-full mr-2" :class="getEstadoDotClass(tarea.estado)"></div>
+                  <span 
+                    class="px-2 py-1 text-xs rounded-full border"
+                    :class="getEstadoClass(tarea.estado)"
+                  >
+                    {{ tarea.estado }}
+                  </span>
+                </div>
               </td>
-              <td class="px-4 py-4">
-                <div class="flex items-center">
+              <td class="px-4 py-4 whitespace-nowrap text-center">
+                <div class="flex items-center justify-center">
                   <div class="w-16 bg-gray-700 rounded-full h-2 mr-2">
                     <div 
-                      class="h-2 rounded-full" 
+                      class="h-2 rounded-full transition-all"
                       :class="getProgresoClass(tarea.progreso)"
                       :style="{ width: `${tarea.progreso}%` }"
                     ></div>

@@ -51,7 +51,9 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-blue-300 text-sm font-medium">Información</p>
-            <p class="text-2xl font-bold text-white mt-1">{{ alertasInfo }}</p>
+            <p class="text-2xl font-bold text-white mt-1">
+              {{ alertasInfo }}
+            </p>
           </div>
           <div
             class="w-12 h-12 bg-blue-900/40 border border-blue-800/30 rounded-lg flex items-center justify-center"
@@ -77,7 +79,7 @@
           <div class="flex items-start space-x-4 flex-1">
             <!-- Icono de alerta -->
             <div
-              class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 border"
+              class="w-10 h-10 rounded-lg border flex items-center justify-center flex-shrink-0"
               :class="getAlertaIconClasses(alerta.nivelSeveridad)"
             >
               <UIcon
@@ -88,79 +90,42 @@
 
             <!-- Contenido de la alerta -->
             <div class="flex-1 min-w-0">
-              <div class="flex items-center space-x-2 mb-2">
+              <div class="flex items-center space-x-3 mb-2">
+                <h4 class="text-white font-medium">{{ alerta.mensaje }}</h4>
                 <span
-                  class="px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wide"
+                  class="px-2 py-1 text-xs rounded-full flex-shrink-0"
                   :class="getAlertaBadgeClass(alerta.nivelSeveridad)"
-                >
-                  {{ alerta.nivelSeveridad }}
-                </span>
-                <span
-                  class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-300"
                 >
                   {{ getAlertaTipoTexto(alerta.tipo) }}
                 </span>
-                <span class="text-xs text-gray-400">
-                  Probabilidad: {{ Math.round(alerta.probabilidad * 100) }}%
-                </span>
               </div>
 
-              <h4 class="text-base font-medium text-white mb-2">
-                {{ alerta.mensaje }}
-              </h4>
+              <p class="text-gray-400 text-sm mb-3">{{ alerta.recomendacion }}</p>
 
-              <div class="text-sm text-gray-300 mb-3">
-                <p class="flex items-start">
-                  <UIcon
-                    name="i-heroicons-light-bulb"
-                    class="h-4 w-4 mr-2 mt-0.5 text-yellow-400 flex-shrink-0"
-                  />
-                  <span>{{ alerta.recomendacion }}</span>
-                </p>
-              </div>
-
-              <div
-                v-if="alerta.areaProbable"
-                class="text-xs text-gray-400 mb-3"
-              >
-                <span class="flex items-center">
-                  <UIcon name="i-heroicons-map-pin" class="h-3 w-3 mr-1" />
-                  Área afectada:
-                  <span class="text-gray-300 ml-1">{{
-                    alerta.areaProbable
-                  }}</span>
-                </span>
+              <div class="flex items-center space-x-4 text-xs text-gray-500">
+                <span>Probabilidad: {{ Math.round(alerta.probabilidad * 100) }}%</span>
+                <span v-if="alerta.areaProbable">Área: {{ alerta.areaProbable }}</span>
               </div>
 
               <!-- Barra de probabilidad -->
-              <div class="mb-4">
+              <div class="mt-3 w-full bg-gray-700 rounded-full h-1.5">
                 <div
-                  class="flex items-center justify-between text-xs text-gray-400 mb-1"
-                >
-                  <span>Nivel de confianza</span>
-                  <span>{{ Math.round(alerta.probabilidad * 100) }}%</span>
-                </div>
-                <div class="w-full bg-gray-700 rounded-full h-2">
-                  <div
-                    class="h-2 rounded-full transition-all duration-300"
-                    :class="getProbabilidadBarClass(alerta.probabilidad)"
-                    :style="{ width: `${alerta.probabilidad * 100}%` }"
-                  ></div>
-                </div>
+                  class="h-1.5 rounded-full transition-all"
+                  :class="getProbabilidadBarClass(alerta.probabilidad)"
+                  :style="{ width: `${alerta.probabilidad * 100}%` }"
+                ></div>
               </div>
 
               <!-- Acciones recomendadas -->
-              <div class="flex flex-wrap gap-2">
+              <div class="mt-4 flex flex-wrap gap-2">
                 <button
                   v-for="accion in getAccionesRecomendadas(alerta.tipo)"
                   :key="accion.id"
-                  @click="
-                    $emit('ejecutar-accion', { accionId: accion.id, alerta })
-                  "
-                  class="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors"
+                  @click="$emit('ejecutar-accion', alerta.id, accion.id)"
+                  class="inline-flex items-center px-3 py-1.5 text-xs border rounded-lg transition-colors"
                   :class="accion.clase"
                 >
-                  <UIcon :name="accion.icono" class="h-3 w-3 mr-1" />
+                  <UIcon :name="accion.icono" class="h-3 w-3 mr-1.5" />
                   {{ accion.texto }}
                 </button>
               </div>
