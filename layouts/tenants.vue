@@ -183,7 +183,7 @@ switch (route.path) {
     return 'Eventos y Actividades';
   case '/coordinadores':
     return 'Líderes y Coordinadores';
-  case '/reports':
+  case '/reportes':
     return 'Análisis de Datos';
   case '/notifications':
     return 'Centro de Avisos';
@@ -207,6 +207,8 @@ const pageBadge = computed(() => {
       return 'Gestión de Equipo';
     case '/coordinadores':
       return 'Líderes y Coordinadores';
+      case '/operaciones':
+      return 'Eventos y Actividades';
     default:
       return null;
   }
@@ -234,7 +236,7 @@ const navigationCategories = [
     icon: 'i-heroicons-chart-bar', 
     activeIcon: 'i-heroicons-chart-bar-solid',
     children: [
-      { name: 'Reportes', to: '/reports', icon: 'i-heroicons-document-chart-bar' },
+      { name: 'Reportes', to: '/reportes', icon: 'i-heroicons-document-chart-bar' },
       { name: 'Certificados', to: '/certificates', icon: 'i-heroicons-document-text' },
     ]
   },

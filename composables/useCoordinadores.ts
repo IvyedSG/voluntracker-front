@@ -1,11 +1,11 @@
-import { ref, computed, watch } from 'vue';
-import { useCoordinadoresStore } from '~/stores/coordinadoresStore';
-import { storeToRefs } from 'pinia';
-import type { Coordinador } from '~/types/coordinadores';
+import { ref, computed, watch } from "vue";
+import { useCoordinadoresStore } from "~/stores/coordinadoresStore";
+import { storeToRefs } from "pinia";
+import type { Coordinador } from "~/types/coordinadores";
 
 export function useCoordinadores() {
   const store = useCoordinadoresStore();
-  
+
   // Extraer datos reactivos del store
   const { coordinadores, isLoading, error } = storeToRefs(store);
 
@@ -13,47 +13,44 @@ export function useCoordinadores() {
   const fetchCoordinadores = () => store.fetchCoordinadores();
   const agregarCoordinador = (data: any) => store.agregarCoordinador(data);
   const eliminarCoordinador = (id: string) => store.eliminarCoordinador(id);
-  const actualizarCoordinador = (data: Coordinador) => store.actualizarCoordinador(data);
-  const cambiarEstadoCoordinador = (id: string, estado: 'activo' | 'inactivo' | 'pendiente') => 
-    store.cambiarEstadoCoordinador(id, estado);
+  const actualizarCoordinador = (data: Coordinador) =>
+    store.actualizarCoordinador(data);
+  const cambiarEstadoCoordinador = (
+    id: string,
+    estado: "activo" | "inactivo" | "pendiente"
+  ) => store.cambiarEstadoCoordinador(id, estado);
   const reenviarInvitacion = (id: string) => store.reenviarInvitacion(id);
 
   // Vista actual (tabla o grid)
-  const viewMode = ref('table');
+  const viewMode = ref("table");
 
   // Variables para controles
   const controlsState = ref({
-    search: '',
+    search: "",
     estado: null as string | null,
     rol: null as string | null,
-    viewMode: 'table'
+    viewMode: "table",
   });
 
-  // Opciones para los selectores
-  const estadoOptions = computed(() => 
-    ['todos', 'activo', 'inactivo', 'pendiente'].map(estado => ({
-      label: estado === 'todos' 
-        ? 'Todos los estados' 
-        : (estado === 'activo' 
-          ? 'Activo' 
-          : (estado === 'pendiente' ? 'Pendiente' : 'Inactivo')),
-      value: estado
-    }))
-  );
-
-  const rolOptions = computed(() => [
-    { label: 'Todos los roles', value: 'todos' },
-    { label: 'Administrador Global', value: 'admin_global' },
-    { label: 'Líder Local', value: 'lider_local' },
-    { label: 'Coordinador Local', value: 'coordinador_local' },
-    { label: 'Voluntario', value: 'voluntario' }
+  // ✅ CORREGIDO: Opciones de estado que coinciden con los datos reales
+  const estadoOptions = computed(() => [
+    { label: "Activo", value: "activo" },
+    { label: "Inactivo", value: "inactivo" },
+    { label: "Pendiente", value: "pendiente" },
   ]);
 
-  // Lista filtrada de coordinadores
+  // ✅ CORREGIDO: Opciones de rol que coinciden con los datos reales
+  const rolOptions = computed(() => [
+    { label: "Administrador", value: "administrador" },
+    { label: "Líder", value: "lider" },
+    { label: "Coordinador", value: "coordinador" },
+  ]);
+
+  // ✅ CORREGIDO: Lista filtrada de coordinadores con lógica mejorada
   const filteredCoordinadores = computed(() => {
     if (!coordinadores.value) return [];
-    
-    return coordinadores.value.filter(c => {
+
+    return coordinadores.value.filter((c) => {
       // Filtrar por término de búsqueda
       const searchMatch =
         !controlsState.value.search ||
@@ -63,22 +60,20 @@ export function useCoordinadores() {
         c.correo
           .toLowerCase()
           .includes(controlsState.value.search.toLowerCase()) ||
-        c.areasAsignadas.some((area) =>
-          area.nombre
-            .toLowerCase()
-            .includes(controlsState.value.search.toLowerCase())
-        );
-      
+        c.rol.toLowerCase().includes(controlsState.value.search.toLowerCase());
+
       // Filtrar por estado
-      const estadoMatch = controlsState.value.estado === null || 
-                        controlsState.value.estado === 'todos' || 
-                        c.estado === controlsState.value.estado;
-      
+      const estadoMatch =
+        controlsState.value.estado === null ||
+        controlsState.value.estado === "todos" ||
+        c.estado === controlsState.value.estado;
+
       // Filtrar por rol
-      const rolMatch = controlsState.value.rol === null || 
-                       controlsState.value.rol === 'todos' || 
-                       c.rol === controlsState.value.rol;
-      
+      const rolMatch =
+        controlsState.value.rol === null ||
+        controlsState.value.rol === "todos" ||
+        c.rol === controlsState.value.rol;
+
       return searchMatch && estadoMatch && rolMatch;
     });
   });
@@ -97,7 +92,7 @@ export function useCoordinadores() {
   };
 
   const openEditModal = (coordinador: Coordinador) => {
-    currentCoordinador.value = { ...coordinador }; // Copia para evitar modificaciones directas
+    currentCoordinador.value = { ...coordinador };
     showEditModal.value = true;
   };
 
@@ -122,31 +117,39 @@ export function useCoordinadores() {
 
   const closeEditModal = () => {
     showEditModal.value = false;
-    setTimeout(() => { currentCoordinador.value = null; }, 300);
+    setTimeout(() => {
+      currentCoordinador.value = null;
+    }, 300);
   };
 
   const closeDetailModal = () => {
     showDetailModal.value = false;
-    setTimeout(() => { currentCoordinador.value = null; }, 300);
+    setTimeout(() => {
+      currentCoordinador.value = null;
+    }, 300);
   };
 
   const closeDeleteModal = () => {
     showDeleteModal.value = false;
-    setTimeout(() => { currentCoordinador.value = null; }, 300);
+    setTimeout(() => {
+      currentCoordinador.value = null;
+    }, 300);
   };
 
   const closeInviteModal = () => {
     showInviteModal.value = false;
-    setTimeout(() => { currentCoordinador.value = null; }, 300);
+    setTimeout(() => {
+      currentCoordinador.value = null;
+    }, 300);
   };
 
   // Reset filters
   const resetFilters = () => {
     controlsState.value = {
-      search: '',
+      search: "",
       estado: null,
       rol: null,
-      viewMode: viewMode.value
+      viewMode: viewMode.value,
     };
   };
 
@@ -157,9 +160,12 @@ export function useCoordinadores() {
   };
 
   // Watch viewMode changes
-  watch(() => controlsState.value.viewMode, (newMode) => {
-    viewMode.value = newMode;
-  });
+  watch(
+    () => controlsState.value.viewMode,
+    (newMode) => {
+      viewMode.value = newMode;
+    }
+  );
 
   return {
     // Datos y acciones del store
@@ -172,7 +178,7 @@ export function useCoordinadores() {
     actualizarCoordinador,
     cambiarEstadoCoordinador,
     reenviarInvitacion,
-    
+
     // Controles y filtros
     viewMode,
     controlsState,
@@ -180,7 +186,7 @@ export function useCoordinadores() {
     rolOptions,
     filteredCoordinadores,
     resetFilters,
-    
+
     // Modales
     showAddModal,
     showEditModal,
@@ -198,8 +204,8 @@ export function useCoordinadores() {
     closeDetailModal,
     closeDeleteModal,
     closeInviteModal,
-    
+
     // Utilidades
-    refreshData
+    refreshData,
   };
 }
