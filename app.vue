@@ -1,7 +1,7 @@
 <template>
   <UApp>
-    <!-- Si estamos en /login, solo renderizamos la página de login sin layout -->
-    <div v-if="isLoginPage">
+    <!-- Si estamos en /login o página de inicio, solo renderizamos la página sin layout -->
+    <div v-if="isPageWithoutLayout">
       <NuxtPage />
     </div>
     <!-- Para todas las demás rutas, usamos el layout correspondiente -->
@@ -18,6 +18,9 @@ import { useRoute } from 'vue-router'
 // Información de la ruta actual
 const route = useRoute()
 
-// Detectar si la ruta actual es /login
-const isLoginPage = computed(() => route.path === '/login')
+// Detectar páginas que no necesitan layout
+const isPageWithoutLayout = computed(() => {
+  const pagesWithoutLayout = ['/login', '/', '/auth/login']
+  return pagesWithoutLayout.includes(route.path)
+})
 </script>

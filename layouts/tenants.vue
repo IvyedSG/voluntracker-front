@@ -183,15 +183,15 @@ switch (route.path) {
     return 'Eventos y Actividades';
   case '/coordinadores':
     return 'Líderes y Coordinadores';
-  case '/reports':
+  case '/reportes':
     return 'Análisis de Datos';
   case '/notifications':
     return 'Centro de Avisos';
   case '/certificates':
     return 'Diplomas y Certificados';
-  case '/integrations':
+  case '/integracion':
     return 'Conexiones Externas';
-  case '/ong-settings':
+  case '/configuraciones':
     return 'Configuración';
   default:
     return 'Panel de Control';
@@ -207,6 +207,8 @@ const pageBadge = computed(() => {
       return 'Gestión de Equipo';
     case '/coordinadores':
       return 'Líderes y Coordinadores';
+      case '/operaciones':
+      return 'Eventos y Actividades';
     default:
       return null;
   }
@@ -234,7 +236,7 @@ const navigationCategories = [
     icon: 'i-heroicons-chart-bar', 
     activeIcon: 'i-heroicons-chart-bar-solid',
     children: [
-      { name: 'Reportes', to: '/reports', icon: 'i-heroicons-document-chart-bar' },
+      { name: 'Reportes', to: '/reportes', icon: 'i-heroicons-document-chart-bar' },
       { name: 'Certificados', to: '/certificates', icon: 'i-heroicons-document-text' },
     ]
   },
@@ -243,9 +245,8 @@ const navigationCategories = [
     icon: 'i-heroicons-cog-6-tooth', 
     activeIcon: 'i-heroicons-cog-6-tooth-solid',
     children: [
-      { name: 'Notificaciones', to: '/notifications', icon: 'i-heroicons-bell' },
-      { name: 'Integraciones', to: '/integrations', icon: 'i-heroicons-link' },
-      { name: 'Configuración', to: '/ong-settings', icon: 'i-heroicons-wrench-screwdriver' },
+      { name: 'Integraciones', to: '/integracion', icon: 'i-heroicons-link' },
+      { name: 'Configuración', to: '/configuraciones', icon: 'i-heroicons-wrench-screwdriver' },
     ]
   },
 ];

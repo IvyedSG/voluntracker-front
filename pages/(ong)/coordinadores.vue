@@ -33,7 +33,7 @@ const {
   estadoOptions,
   rolOptions,
   filteredCoordinadores,
-  resetFilters,
+  _resetFilters: resetFilters,
 
   // Modales
   showAddModal,
@@ -49,7 +49,7 @@ const {
   openInviteModal,
   closeAddModal,
   closeEditModal,
-  closeDetailModal,
+  _closeDetailModal: closeDetailModal,
   closeDeleteModal,
   closeInviteModal,
 
@@ -64,30 +64,21 @@ onMounted(fetchCoordinadores);
 const handleDelete = async (id) => {
   const success = await eliminarCoordinador(id);
   if (success) {
-    $toast?.success("Coordinador eliminado correctamente");
     closeDeleteModal();
-  } else {
-    $toast?.error("Error al eliminar el coordinador");
   }
 };
 
 const handleAdd = async (data) => {
   const success = await agregarCoordinador(data);
   if (success) {
-    $toast?.success("Coordinador agregado correctamente");
     closeAddModal();
-  } else {
-    $toast?.error("Error al agregar el coordinador");
   }
 };
 
 const handleUpdate = async (data) => {
   const success = await actualizarCoordinador(data);
   if (success) {
-    $toast?.success("Coordinador actualizado correctamente");
     closeEditModal();
-  } else {
-    $toast?.error("Error al actualizar el coordinador");
   }
 };
 
@@ -102,25 +93,15 @@ const toggleCoordinadorStatus = (coordinador) => {
     nuevoEstado = "activo";
   }
 
-  cambiarEstadoCoordinador(coordinador.id, nuevoEstado).then((success) => {
-    if (success) {
-      $toast?.success(`Estado cambiado a: ${nuevoEstado}`);
-    } else {
-      $toast?.error("Error al cambiar el estado");
-    }
-  });
+  cambiarEstadoCoordinador(coordinador.id, nuevoEstado);
 };
 
 const handleReenviarInvitacion = async (id) => {
   const success = await reenviarInvitacion(id);
   if (success) {
-    $toast?.success("Invitación enviada correctamente");
     closeInviteModal();
-  } else {
-    $toast?.error("Error al enviar la invitación");
   }
 };
-
 </script>
 
 <template>
@@ -206,44 +187,46 @@ const handleReenviarInvitacion = async (id) => {
       <UButton class="mt-4" @click="openAddModal">Agregar coordinador</UButton>
     </div>
 
-    <!-- Modales -->
-    <CoordinadorDetailModal
-      v-if="currentCoordinador"
-      v-model="showDetailModal"
-      :coordinador="currentCoordinador"
-      @edit="openEditModal(currentCoordinador)"
-      @invite="openInviteModal(currentCoordinador)"
-    />
+    <!-- ✅ MODALES FUERA DE LOS COMPONENTES - Renderizados como portales -->
+    <Teleport to="body">
+      <CoordinadorDetailModal
+        v-if="currentCoordinador && showDetailModal"
+        v-model="showDetailModal"
+        :coordinador="currentCoordinador"
+        @edit="openEditModal(currentCoordinador)"
+        @invite="openInviteModal(currentCoordinador)"
+      />
 
-    <CoordinadorEditModal
-      v-if="currentCoordinador"
-      v-model="showEditModal"
-      :coordinador="currentCoordinador"
-      @submit="handleUpdate"
-      @cancel="closeEditModal"
-    />
+      <CoordinadorEditModal
+        v-if="currentCoordinador && showEditModal"
+        v-model="showEditModal"
+        :coordinador="currentCoordinador"
+        @submit="handleUpdate"
+        @cancel="closeEditModal"
+      />
 
-    <CoordinadorDeleteModal
-      v-if="currentCoordinador"
-      v-model="showDeleteModal"
-      :coordinador="currentCoordinador"
-      @confirm="handleDelete(currentCoordinador?.id)"
-      @cancel="closeDeleteModal"
-    />
+      <CoordinadorDeleteModal
+        v-if="currentCoordinador && showDeleteModal"
+        v-model="showDeleteModal"
+        :coordinador="currentCoordinador"
+        @confirm="handleDelete(currentCoordinador?.id)"
+        @cancel="closeDeleteModal"
+      />
 
-    <CoordinadorAddModal
-        v-if="currentCoordinador"
+      <CoordinadorAddModal
+        v-if="showAddModal"
         v-model="showAddModal"
         @submit="handleAdd"
         @cancel="closeAddModal"
-        />
+      />
 
-    <CoordinadorInviteModal
-      v-if="currentCoordinador"
-      v-model="showInviteModal"
-      :coordinador="currentCoordinador"
-      @confirm="handleReenviarInvitacion(currentCoordinador?.id)"
-      @cancel="closeInviteModal"
-    />
+      <CoordinadorInviteModal
+        v-if="currentCoordinador && showInviteModal"
+        v-model="showInviteModal"
+        :coordinador="currentCoordinador"
+        @confirm="handleReenviarInvitacion(currentCoordinador?.id)"
+        @cancel="closeInviteModal"
+      />
+    </Teleport>
   </div>
 </template>

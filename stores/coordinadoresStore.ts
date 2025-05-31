@@ -19,8 +19,12 @@ export const useCoordinadoresStore = defineStore("coordinadores", {
         await new Promise((resolve) => setTimeout(resolve, 300));
         this.coordinadores = await fetchMockCoordinadores();
         return true;
-      } catch (err: any) {
-        this.error = err?.message || "Error al cargar los coordinadores";
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          this.error = err.message || "Error al cargar los coordinadores";
+        } else {
+          this.error = "Error al cargar los coordinadores";
+        }
         console.error("Error al cargar coordinadores:", err);
         return false;
       } finally {
@@ -32,7 +36,7 @@ export const useCoordinadoresStore = defineStore("coordinadores", {
       try {
         this.areas = await fetchMockAreas();
         return true;
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Error al cargar áreas:", err);
         return false;
       }
@@ -44,6 +48,8 @@ export const useCoordinadoresStore = defineStore("coordinadores", {
       this.isLoading = true;
       this.error = null;
       try {
+        console.log("Store: Recibiendo coordinador para agregar:", coordinador); // ✅ Debug
+
         // Simulamos una petición a la API
         await new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -52,13 +58,20 @@ export const useCoordinadoresStore = defineStore("coordinadores", {
           ? crypto.randomUUID()
           : Date.now().toString();
 
-        // Añadimos el coordinador al estado
-        this.coordinadores.push({
+        // ✅ FORMATO CORRECTO PARA AGREGAR AL ESTADO
+        const nuevoCoordinador = {
           id,
           ...coordinador,
           fechaRegistro: new Date().toISOString().split("T")[0],
           ultimoAcceso: null,
-        });
+        };
+
+        console.log("Store: Agregando coordinador:", nuevoCoordinador); // ✅ Debug
+
+        // Añadimos el coordinador al estado
+        this.coordinadores.push(nuevoCoordinador);
+
+        console.log("Store: Coordinadores actualizados:", this.coordinadores); // ✅ Debug
 
         return true;
       } catch (err) {
@@ -103,6 +116,11 @@ export const useCoordinadoresStore = defineStore("coordinadores", {
       } finally {
         this.isLoading = false;
       }
+    },
+
+    async reenviarInvitacion(id: string, mensajePersonalizado?: string) {
+      // Reutilizar la lógica de enviarInvitacion
+      return this.enviarInvitacion(id, mensajePersonalizado);
     },
 
     async cambiarEstadoCoordinador(

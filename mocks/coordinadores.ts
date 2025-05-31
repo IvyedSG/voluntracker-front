@@ -1,9 +1,9 @@
-import type { Coordinador } from '~/types/coordinadores';
+import type { Coordinador } from "~/types/coordinadores";
 
 export const fetchMockCoordinadores = async (): Promise<Coordinador[]> => {
   // Simulamos una pequeña demora para simular una petición API
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
   return [
     {
       id: "1",
@@ -12,7 +12,7 @@ export const fetchMockCoordinadores = async (): Promise<Coordinador[]> => {
       estado: "activo",
       areasAsignadas: [
         { id: "a1", nombre: "Salud" },
-        { id: "a2", nombre: "Educación" }
+        { id: "a2", nombre: "Educación" },
       ],
       nivelAcceso: "avanzado",
       rol: "administrador",
@@ -21,16 +21,14 @@ export const fetchMockCoordinadores = async (): Promise<Coordinador[]> => {
       ultimaSesion: "2023-05-18T14:30:00",
       verificacion2FA: true,
       dispositivosConectados: 2,
-      voluntariosAsignados: 15
+      voluntariosAsignados: 15,
     },
     {
       id: "2",
       nombre: "Carlos López Hernández",
       correo: "carlos.lopez@voluntracker.org",
       estado: "activo",
-      areasAsignadas: [
-        { id: "a3", nombre: "Logística" }
-      ],
+      areasAsignadas: [{ id: "a3", nombre: "Logística" }],
       nivelAcceso: "basico",
       rol: "lider",
       fechaRegistro: "2023-02-20",
@@ -38,7 +36,7 @@ export const fetchMockCoordinadores = async (): Promise<Coordinador[]> => {
       ultimaSesion: "2023-05-17T09:45:00",
       verificacion2FA: false,
       dispositivosConectados: 1,
-      voluntariosAsignados: 8
+      voluntariosAsignados: 8,
     },
     {
       id: "3",
@@ -47,7 +45,7 @@ export const fetchMockCoordinadores = async (): Promise<Coordinador[]> => {
       estado: "pendiente",
       areasAsignadas: [
         { id: "a5", nombre: "Comunicación" },
-        { id: "a4", nombre: "TI" }
+        { id: "a4", nombre: "TI" },
       ],
       nivelAcceso: "avanzado",
       rol: "coordinador",
@@ -56,16 +54,14 @@ export const fetchMockCoordinadores = async (): Promise<Coordinador[]> => {
       ultimaSesion: null,
       verificacion2FA: false,
       dispositivosConectados: 0,
-      voluntariosAsignados: 0
+      voluntariosAsignados: 0,
     },
     {
       id: "4",
       nombre: "David Sánchez Gómez",
       correo: "david.sanchez@voluntracker.org",
       estado: "inactivo",
-      areasAsignadas: [
-        { id: "a6", nombre: "Administración" }
-      ],
+      areasAsignadas: [{ id: "a6", nombre: "Administración" }],
       nivelAcceso: "basico",
       rol: "coordinador",
       fechaRegistro: "2022-11-05",
@@ -73,7 +69,7 @@ export const fetchMockCoordinadores = async (): Promise<Coordinador[]> => {
       ultimaSesion: "2023-03-22T16:15:00",
       verificacion2FA: false,
       dispositivosConectados: 0,
-      voluntariosAsignados: 5
+      voluntariosAsignados: 5,
     },
     {
       id: "5",
@@ -83,7 +79,7 @@ export const fetchMockCoordinadores = async (): Promise<Coordinador[]> => {
       areasAsignadas: [
         { id: "a2", nombre: "Educación" },
         { id: "a7", nombre: "Medio Ambiente" },
-        { id: "a5", nombre: "Comunicación" }
+        { id: "a5", nombre: "Comunicación" },
       ],
       nivelAcceso: "avanzado",
       rol: "lider",
@@ -92,12 +88,14 @@ export const fetchMockCoordinadores = async (): Promise<Coordinador[]> => {
       ultimaSesion: "2023-05-19T11:20:00",
       verificacion2FA: true,
       dispositivosConectados: 3,
-      voluntariosAsignados: 12
-    }
+      voluntariosAsignados: 12,
+    },
   ];
 };
 
-export const fetchMockAreas = async (): Promise<{ id: string; nombre: string }[]> => {
+export const fetchMockAreas = async (): Promise<
+  { id: string; nombre: string }[]
+> => {
   return [
     { id: "a1", nombre: "Salud" },
     { id: "a2", nombre: "Educación" },
@@ -106,6 +104,6 @@ export const fetchMockAreas = async (): Promise<{ id: string; nombre: string }[]
     { id: "a5", nombre: "Comunicación" },
     { id: "a6", nombre: "Administración" },
     { id: "a7", nombre: "Medio Ambiente" },
-    { id: "a8", nombre: "Desarrollo Comunitario" }
+    { id: "a8", nombre: "Desarrollo Comunitario" },
   ];
 };
