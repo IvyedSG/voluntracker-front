@@ -70,16 +70,6 @@
         />
       </div>
 
-      <!-- Tab: Branding -->
-      <div v-if="tabActivo === 'branding'">
-        <configuracion-branding
-          :configuracion="configuracionBranding"
-          :cargando="guardandoBranding"
-          @actualizar="actualizarBranding"
-          @cambios="marcarCambios"
-        />
-      </div>
-
       <!-- Tab: Seguridad -->
       <div v-if="tabActivo === 'seguridad'">
         <configuracion-seguridad
@@ -129,7 +119,6 @@ import { useConfiguracionesStore } from '~/stores/configuracionesStore';
 import type { 
   DatosOrganizacion, 
   Rol,
-  ConfiguracionBranding as ConfiguracionBrandingType,
   ConfiguracionSeguridad as ConfiguracionSeguridadType,
   ConfiguracionNotificaciones as ConfiguracionNotificacionesType,
   ConfiguracionGeneral as ConfiguracionGeneralType
@@ -137,7 +126,6 @@ import type {
 
 // Importación explícita de componentes
 import ConfiguracionOrganizacion from '~/components/configuracion/configuracionOrganizacion.vue';
-import ConfiguracionBranding from '~/components/configuracion/configuracionBranding.vue';
 import ConfiguracionSeguridad from '~/components/configuracion/configuracionSeguridad.vue';
 import ConfiguracionNotificaciones from '~/components/configuracion/configuracionNotificaciones.vue';
 import ConfiguracionGeneral from '~/components/configuracion/configuracionGeneral.vue';
@@ -150,21 +138,19 @@ const configuracionesStore = useConfiguracionesStore();
 const toast = useToast();
 
 // Estado local
-const tabActivo = ref<'organizacion' | 'branding' | 'seguridad' | 'notificaciones' | 'general' | 'tenant'>('organizacion');
+const tabActivo = ref<'organizacion'| 'seguridad' | 'notificaciones' | 'general' | 'tenant'>('organizacion');
 
 // Computed del store
 const cargando = computed(() => configuracionesStore.cargando);
 const error = computed(() => configuracionesStore.error);
 const cambiosPendientes = computed(() => configuracionesStore.cambiosPendientes);
 const datosOrganizacion = computed(() => configuracionesStore.datosOrganizacion);
-const configuracionBranding = computed(() => configuracionesStore.configuracionBranding);
 const configuracionSeguridad = computed(() => configuracionesStore.configuracionSeguridad);
 const configuracionNotificaciones = computed(() => configuracionesStore.configuracionNotificaciones);
 const configuracionGeneral = computed(() => configuracionesStore.configuracionGeneral);
 const configuracionTenant = computed(() => configuracionesStore.configuracionTenant);
 const roles = computed(() => configuracionesStore.roles);
 const guardandoOrganizacion = computed(() => configuracionesStore.guardandoOrganizacion);
-const guardandoBranding = computed(() => configuracionesStore.guardandoBranding);
 const guardandoSeguridad = computed(() => configuracionesStore.guardandoSeguridad);
 const guardandoNotificaciones = computed(() => configuracionesStore.guardandoNotificaciones);
 const guardandoGeneral = computed(() => configuracionesStore.guardandoGeneral);
@@ -172,7 +158,6 @@ const guardandoGeneral = computed(() => configuracionesStore.guardandoGeneral);
 // Tabs de navegación
 const tabs = [
   { id: 'organizacion', label: 'Organización', icon: 'i-heroicons-building-office' },
-  { id: 'branding', label: 'Branding', icon: 'i-heroicons-paint-brush' },
   { id: 'seguridad', label: 'Seguridad', icon: 'i-heroicons-shield-check' },
   { id: 'notificaciones', label: 'Notificaciones', icon: 'i-heroicons-bell' },
   { id: 'general', label: 'General', icon: 'i-heroicons-cog-6-tooth' },
@@ -195,24 +180,6 @@ const actualizarOrganizacion = async (datos: Partial<DatosOrganizacion>) => {
     toast.add({
       title: 'Organización actualizada',
       description: 'Los datos de la organización se han guardado correctamente',
-      color: 'success'
-    });
-  } catch (err: any) {
-    toast.add({
-      title: 'Error al actualizar',
-      description: err.message || 'No se pudieron guardar los cambios',
-      color: 'error'
-    });
-  }
-};
-
-const actualizarBranding = async (branding: Partial<ConfiguracionBrandingType>) => {
-  try {
-    await configuracionesStore.actualizarBranding(branding);
-    configuracionesStore.limpiarCambiosPendientes();
-    toast.add({
-      title: 'Branding actualizado',
-      description: 'La configuración de marca se ha guardado correctamente',
       color: 'success'
     });
   } catch (err: any) {

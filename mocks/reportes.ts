@@ -62,11 +62,56 @@ export const datosVoluntariosMock = {
 
 export const datosAreasMock = {
   areas: [
-    { id: 'educacion', nombre: 'Educación', voluntarios: 25, horasRegistradas: 450, actividadesCompletadas: 18, eficiencia: 85.2, tendencia: 'arriba', color: '#3B82F6' },
-    { id: 'salud', nombre: 'Salud', voluntarios: 32, horasRegistradas: 620, actividadesCompletadas: 22, eficiencia: 91.5, tendencia: 'arriba', color: '#10B981' },
-    { id: 'medio-ambiente', nombre: 'Medio Ambiente', voluntarios: 18, horasRegistradas: 310, actividadesCompletadas: 12, eficiencia: 76.8, tendencia: 'abajo', color: '#F59E0B' },
-    { id: 'derechos-humanos', nombre: 'Derechos Humanos', voluntarios: 12, horasRegistradas: 180, actividadesCompletadas: 8, eficiencia: 88.9, tendencia: 'arriba', color: '#8B5CF6' },
-    { id: 'asistencia-social', nombre: 'Asistencia Social', voluntarios: 40, horasRegistradas: 896, actividadesCompletadas: 35, eficiencia: 82.1, tendencia: 'estable', color: '#EC4899' }
+    { 
+      id: 'educacion', 
+      nombre: 'Educación', 
+      voluntarios: 25, 
+      horasRegistradas: 450, 
+      actividadesCompletadas: 18, 
+      eficiencia: 85.2, 
+      tendencia: 'arriba' as const, 
+      color: '#3B82F6' 
+    },
+    { 
+      id: 'salud', 
+      nombre: 'Salud', 
+      voluntarios: 32, 
+      horasRegistradas: 620, 
+      actividadesCompletadas: 22, 
+      eficiencia: 91.5, 
+      tendencia: 'arriba' as const, 
+      color: '#10B981' 
+    },
+    { 
+      id: 'medio-ambiente', 
+      nombre: 'Medio Ambiente', 
+      voluntarios: 18, 
+      horasRegistradas: 310, 
+      actividadesCompletadas: 12, 
+      eficiencia: 76.8, 
+      tendencia: 'abajo' as const, 
+      color: '#F59E0B' 
+    },
+    { 
+      id: 'derechos-humanos', 
+      nombre: 'Derechos Humanos', 
+      voluntarios: 12, 
+      horasRegistradas: 180, 
+      actividadesCompletadas: 8, 
+      eficiencia: 88.9, 
+      tendencia: 'arriba' as const, 
+      color: '#8B5CF6' 
+    },
+    { 
+      id: 'asistencia-social', 
+      nombre: 'Asistencia Social', 
+      voluntarios: 40, 
+      horasRegistradas: 896, 
+      actividadesCompletadas: 35, 
+      eficiencia: 82.1, 
+      tendencia: 'estable' as const, 
+      color: '#EC4899' 
+    }
   ]
 };
 
@@ -146,3 +191,141 @@ export const reportesGraficos = {
     ]
   }
 };
+
+export const metricasRendimiento = [
+  {
+    id: 'retention_rate',
+    titulo: 'Tasa de Retención',
+    descripcion: 'Voluntarios activos por más de 3 meses',
+    valor: 68,
+    meta: 80,
+    progreso: 85,
+    formatoValor: 'porcentaje',
+    icono: 'i-heroicons-user-group'
+  },
+  {
+    id: 'task_completion',
+    titulo: 'Tareas Completadas',
+    descripcion: 'Porcentaje de tareas finalizadas en periodo',
+    valor: 89,
+    meta: 95,
+    progreso: 94,
+    formatoValor: 'porcentaje',
+    icono: 'i-heroicons-clipboard-document-check'
+  },
+  {
+    id: 'volunteer_satisfaction',
+    titulo: 'Satisfacción',
+    descripcion: 'Índice de satisfacción en encuestas',
+    valor: 4.2,
+    meta: 4.5,
+    progreso: 93,
+    formatoValor: 'decimal',
+    icono: 'i-heroicons-face-smile'
+  },
+  {
+    id: 'resource_utilization',
+    titulo: 'Uso de Recursos',
+    descripcion: 'Eficiencia en asignación de recursos',
+    valor: 72,
+    meta: 85, 
+    progreso: 85,
+    formatoValor: 'porcentaje',
+    icono: 'i-heroicons-cog-6-tooth'
+  },
+  {
+    id: 'engagement_score',
+    titulo: 'Nivel de Compromiso',
+    descripcion: 'Participación activa en actividades',
+    valor: 79,
+    meta: 90,
+    progreso: 88, 
+    formatoValor: 'porcentaje',
+    icono: 'i-heroicons-heart'
+  },
+  {
+    id: 'impact_metric',
+    titulo: 'Impacto Social',
+    descripcion: 'Valoración estimada del impacto',
+    valor: 8.7,
+    meta: 10,
+    progreso: 87,
+    formatoValor: 'decimal',
+    icono: 'i-heroicons-globe-americas'
+  }
+];
+
+export const metricasParticipacion = [
+  {
+    id: 'attendance_rate',
+    titulo: 'Tasa de Asistencia',
+    descripcion: 'Asistencia a actividades programadas',
+    valor: 78.5,
+    formatoValor: 'porcentaje',
+    icono: 'i-heroicons-calendar',
+    color: 'blue'
+  },
+  {
+    id: 'new_volunteers',
+    titulo: 'Nuevos Voluntarios',
+    descripcion: 'Incorporaciones en el período actual',
+    valor: 23,
+    icono: 'i-heroicons-user-plus',
+    color: 'green'
+  },
+  {
+    id: 'recurrence_rate',
+    titulo: 'Tasa de Recurrencia',
+    descripcion: 'Participación en múltiples actividades',
+    valor: 64.2,
+    formatoValor: 'porcentaje',
+    icono: 'i-heroicons-arrow-path',
+    color: 'purple'
+  },
+  {
+    id: 'avg_hours',
+    titulo: 'Horas Promedio',
+    descripcion: 'Horas por voluntario al mes',
+    valor: 8.3,
+    formatoValor: 'horas',
+    icono: 'i-heroicons-clock',
+    color: 'orange'
+  }
+];
+
+export const metricasImpacto = [
+  {
+    id: 'beneficiaries',
+    titulo: 'Beneficiarios',
+    descripcion: 'Personas alcanzadas directamente',
+    valor: 1254,
+    icono: 'i-heroicons-users',
+    color: 'green'
+  },
+  {
+    id: 'economic_value',
+    titulo: 'Valoración Económica',
+    descripcion: 'Valor estimado del trabajo voluntario',
+    valor: 12450,
+    formatoValor: 'dinero',
+    icono: 'i-heroicons-currency-dollar',
+    color: 'yellow'
+  },
+  {
+    id: 'projects_completed',
+    titulo: 'Proyectos Completados',
+    descripcion: 'Iniciativas finalizadas con éxito',
+    valor: 8,
+    icono: 'i-heroicons-check-badge',
+    color: 'blue'
+  },
+  {
+    id: 'community_rating',
+    titulo: 'Calificación Comunitaria',
+    descripcion: 'Valoración promedio de la comunidad',
+    valor: 4.7,
+    formatoValor: 'decimal',
+    icono: 'i-heroicons-star',
+    color: 'orange'
+  }
+];

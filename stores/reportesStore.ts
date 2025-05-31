@@ -8,6 +8,8 @@ import type {
   PrediccionAlerta,
   PeriodoTiempo,
 } from "~/types/reportes";
+
+// Importar mocks como datos serializables
 import {
   reportesMetricas,
   reportesGraficos,
@@ -15,6 +17,9 @@ import {
   datosVoluntariosMock,
   datosAreasMock,
   datosTareasMock,
+  metricasRendimiento,
+  metricasParticipacion,
+  metricasImpacto,
 } from "~/mocks/reportes";
 
 export const useReportesStore = defineStore("reportes", () => {
@@ -38,10 +43,10 @@ export const useReportesStore = defineStore("reportes", () => {
   const reportesGuardados = ref<GeneracionReporte[]>([]);
   const alertasPrediccion = ref<PrediccionAlerta[]>([]);
 
-  // Nuevos estados para datos específicos
-  const datosVoluntarios = ref<any>(null);
-  const datosAreas = ref<any>(null);
-  const datosTareas = ref<any>(null);
+  // Estados para datos específicos - inicializados con datos serializables
+  const datosVoluntarios = ref<any>(datosVoluntariosMock);
+  const datosAreas = ref<any>(datosAreasMock);
+  const datosTareas = ref<any>(datosTareasMock);
 
   // Getters
   const metricasActuales = computed(() => metricas.value);
@@ -61,6 +66,11 @@ export const useReportesStore = defineStore("reportes", () => {
   const alertasCriticas = computed(() =>
     alertasPrediccion.value.filter((a) => a.nivelSeveridad === "critica")
   );
+
+  // Computed properties para métricas adicionales - usando valores serializables
+  const metricasKpi = computed(() => metricasRendimiento);
+  const datosParticipacion = computed(() => metricasParticipacion);
+  const datosImpacto = computed(() => metricasImpacto);
 
   // Acciones
   const cambiarPeriodo = (periodo: PeriodoTiempo) => {
@@ -85,13 +95,13 @@ export const useReportesStore = defineStore("reportes", () => {
       // Simular carga de API
       await new Promise((resolve) => setTimeout(resolve, 800));
 
-      // Cargar datos desde mocks
-      metricas.value = reportesMetricas;
-      graficos.value = reportesGraficos;
-      alertasPrediccion.value = alertasPrediccionMock;
-      datosVoluntarios.value = datosVoluntariosMock;
-      datosAreas.value = datosAreasMock;
-      datosTareas.value = datosTareasMock;
+      // Cargar datos desde mocks sin funciones
+      metricas.value = [...reportesMetricas];
+      graficos.value = { ...reportesGraficos };
+      alertasPrediccion.value = [...alertasPrediccionMock];
+      datosVoluntarios.value = { ...datosVoluntariosMock };
+      datosAreas.value = { ...datosAreasMock };
+      datosTareas.value = { ...datosTareasMock };
     } catch (err: any) {
       error.value = err.message || "Error al cargar los reportes";
     } finally {
@@ -103,8 +113,7 @@ export const useReportesStore = defineStore("reportes", () => {
     cargando.value = true;
     try {
       // Simular tiempo de generación basado en el formato
-      const tiempoGeneracion =
-        datosReporte.formato === "pdf" ? 2000 : 1500;
+      const tiempoGeneracion = datosReporte.formato === "pdf" ? 2000 : 1500;
       await new Promise((resolve) => setTimeout(resolve, tiempoGeneracion));
 
       return {
@@ -122,8 +131,9 @@ export const useReportesStore = defineStore("reportes", () => {
     }
   };
 
-  // Inicializar
-  cargarDatosReportes();
+  // Inicializar con datos por defecto para evitar estados undefined
+  metricas.value = [...reportesMetricas];
+  alertasPrediccion.value = [...alertasPrediccionMock];
 
   return {
     // Estado
@@ -138,6 +148,11 @@ export const useReportesStore = defineStore("reportes", () => {
     datosVoluntarios,
     datosAreas,
     datosTareas,
+
+    // Computed properties para métricas adicionales
+    metricasKpi,
+    datosParticipacion,
+    datosImpacto,
 
     // Getters
     metricasActuales,

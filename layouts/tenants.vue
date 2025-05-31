@@ -189,7 +189,7 @@ switch (route.path) {
     return 'Centro de Avisos';
   case '/certificates':
     return 'Diplomas y Certificados';
-  case '/integrations':
+  case '/integracion':
     return 'Conexiones Externas';
   case '/configuraciones':
     return 'Configuración';
@@ -245,8 +245,7 @@ const navigationCategories = [
     icon: 'i-heroicons-cog-6-tooth', 
     activeIcon: 'i-heroicons-cog-6-tooth-solid',
     children: [
-      { name: 'Notificaciones', to: '/notifications', icon: 'i-heroicons-bell' },
-      { name: 'Integraciones', to: '/integrations', icon: 'i-heroicons-link' },
+      { name: 'Integraciones', to: '/integracion', icon: 'i-heroicons-link' },
       { name: 'Configuración', to: '/configuraciones', icon: 'i-heroicons-wrench-screwdriver' },
     ]
   },

@@ -60,6 +60,11 @@ export default defineNuxtConfig({
       pathPrefix: false 
     },
     {
+      path: '~/components/auth',
+      prefix: 'Auth',
+      global: true
+    },
+    {
       path: '~/components/configuracion',
       prefix: 'configuracion',
       global: true
